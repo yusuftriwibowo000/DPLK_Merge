@@ -1,0 +1,89 @@
+﻿Sub Lihat_Investasi_Investasi_Umum_Generate_Dayend
+	wait 3
+	Browser("DPLK").Page("Generate Dayend (SPI/PHI)  Investasi").WebEdit("Field Search").Set DataTable.Value("SEARCH_DOKUMEN_ID",dtlocalsheet)
+	wait 5
+	Browser("DPLK").Page("Generate Dayend (SPI/PHI)  Investasi").WebElement("Btn Lihat").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Generate Dayend (SPI/PHI)  Investasi"),"Masuk Menu Lihat Data, Berikut Data Yang Dipilih", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+Sub Bandingkan_No_Akun_Investasi_Investasi_Umum_Setup_Jurnal_Standar
+	Dim Text
+	wait 10
+	Jumlah_Row = Browser("DPLK").Page("Generate Dayend (SPI/PHI)  Investasi").WebTable("Tbl Dayend").RowCount
+	No_Akun_Batch_Split = Split(No_Akun_Batch,",")
+	wait 10
+'	For Iteratorr = 0 To Jumlah_Row - 1 Step 1
+'		For Iterator = 0 To Ubound(No_Akun_Batch_Split) Step 1
+'			No_Akun_Banding = Browser("DPLK").Page("Generate Dayend (SPI/PHI)  Investasi").WebTable("Tbl Dayend").GetCellData(Iterator,3)	
+'			If No_Akun_Banding = No_Akun_Batch_Split(Iteratorr) Then
+'				Text = Text & " Nomer Akun " & No_Akun_Banding & " Sudah Terverifikasi,"
+'			End If
+'		Next	
+'	Next
+
+	For Data_Pada_Tabel = 2 To Jumlah_Row Step 1
+		No_Akun = Browser("DPLK").Page("Generate Dayend (SPI/PHI)  Investasi").WebTable("Tbl Dayend").GetCellData(Data_Pada_Tabel,3)	
+		For Cek_Data_Index = 0 To UBound(No_Akun_Batch_Split) Step 1
+			If No_Akun = No_Akun_Batch_Split(Cek_Data_Index) Then
+				Text = Text & " Nomer Akun " & No_Akun & " Sudah Terverifikasi,"
+			End If
+		Next
+	Next
+	Text = Left(Text,len(Text)-1)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Generate Dayend (SPI/PHI)  Investasi"),"Berikut Hasil Perbandingan Nomer Akun ",  Text ,  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	No_Akun_Batch = ""
+End Sub
+
+Sub Compare_Debit_And_Credit_Global_Antara_Entry_Journal_dan_Investasi_Investasi_Umum
+	Set objkey = CreateObject("WScript.Shell")
+	jumlah_Row = Browser("DPLK").Page("Generate Dayend (SPI/PHI)  Investasi").WebTable("Tbl Dayend").RowCount()
+	
+	For Iterator = 2 To jumlah_Row Step 1
+		'Get Debit Credit
+		Credit = Browser("DPLK").Page("Generate Dayend (SPI/PHI)  Investasi").WebTable("Tbl Dayend").GetCellData(iterator,7)
+		Debit = Browser("DPLK").Page("Generate Dayend (SPI/PHI)  Investasi").WebTable("Tbl Dayend").GetCellData(iterator,6)
+		'Contert Debit Credit To Integer
+		Credit = Replace(Credit,".","")
+		Credit = Replace(Credit,",",".")
+		Int_Credit = CDbl(Credit)
+		
+		
+		Debit = Replace(Debit,".","")
+		Debit = Replace(Debit,",",".")
+		Int_Debit = CDbl(Debit)
+		
+		Compare_Global_Total_Credit = Compare_Global_Total_Credit + Int_Credit
+		Compare_Global_Total_Debit = Compare_Global_Total_Debit + Int_Debit
+	Next
+	
+	If Compare_Global_Total_Credit = Global_Total_Credit Then
+		Text_Credit = "Total Kredit Sama,Sama - Sama " & Compare_Global_Total_Credit & " dan " & Global_Total_Credit
+		Flag_Credit = True
+	else
+		Text_Credit = "Total Kredit Beda Yang Dari Jurnal : " & Global_Total_Credit & ", dan Disini :" & Compare_Global_Total_Credit
+		Flag_Credit = False
+	End If
+	
+	If Compare_Global_Total_Debit = Global_Total_Debit Then
+		Text_Debit = "Total Debit Sama,Sama - Sama " & Compare_Global_Total_Debit & " dan " & Global_Total_Debit
+		Flag_Debit = True
+	else
+		Text_Debit = "Total Debit Beda Yang Dari Jurnal : " & Global_Total_Debit & ", dan Disini :" & Compare_Global_Total_Debit
+		Flag_Debit = False
+	End If
+	
+	If Flag_Debit and Flag_Credit  Then
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Generate Dayend (SPI/PHI)  Investasi"),"Nilai Kredit dan Debit Sama ", Text_Credit & ". " & Text_Debit & "." ,  compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+	Else 
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Generate Dayend (SPI/PHI)  Investasi"),"Nilai Kredit dan Debit Ada Yang Beda ", Text_Credit & ". " & Text_Debit & "." ,  compatibilityMode.Desktop, ReportStatus.Failed)
+		wait 2
+	End If
+	
+End Sub

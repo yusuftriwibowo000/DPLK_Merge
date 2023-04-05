@@ -1,0 +1,108 @@
+﻿Set objkey		= CreateObject("WScript.Shell")
+Set devices		= CreateObject("Mercury.DeviceReplay")
+Set objclip		= CreateObject("Mercury.Clipboard")
+
+REM -------------------------------- Global Function -----------------------------------------
+Sub ConfirmOtorisasi
+	Dim password
+	password = DataTable.Value("PASSWORD", dtlocalsheet)
+		If Browser("DPLK").Page("Global").WebElement("Form Otorisasi").Exist(5) Then
+			Browser("DPLK").Page("Global").WebEdit("Field Password Confirm").Set password
+				wait 2
+					Call CaptureImageUFTV2(Browser("DPLK").Page("Global"), "Muncul Form Otorisasi, Isi Password yang Anda Gunakan Saat Login Untuk Konfirmasi", " ", compatibilityMode.Desktop, ReportStatus.Done)
+				wait 2
+			Browser("DPLK").Page("Global").WebButton("Btn Submit Delete").Click
+			wait 2
+		End If
+End Sub
+
+REM -------------------------------- Laporan->Laporan Saldo Peserta -----------------------------------------
+
+'Fungsi Cetak Laporan Saldo Peserta
+Sub CetakLaporanSaldoPeserta
+	
+	namaLaporan			= DataTable.Value("NAMA_LAPORAN",dtlocalsheet)
+	noRekening			= DataTable.Value("NO_REKENING",dtlocalsheet)
+	tglTransaksiAwal	= DataTable.Value("TGL_TRANSAKSI_AWAL",dtlocalsheet)
+	tglTransaksiAkhir	= DataTable.Value("TGL_TRANSAKSI_AKHIR",dtlocalsheet)
+	formatLaporan		= DataTable.Value("FORMAT_LAPORAN",dtlocalsheet)
+	namaFile			= DataTable.Value("NAMA_FILE",dtlocalsheet)
+	
+	wait 2
+	Browser("DPLK").Page("Laporan Saldo Peserta").WebElement("Dropdown Nama Laporan").Click
+	wait 1
+	Browser("DPLK").Page("Laporan Saldo Peserta").WebEdit("Field Search Dropdown").Click
+	wait 1
+	objkey.SendKeys(namaLaporan)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Laporan Saldo Peserta").WebButton("Btn Search No.Peserta"), "Klik Button Search No.Peserta", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Laporan Saldo Peserta").WebButton("Btn Search No.Peserta").Click
+	wait 2
+	Browser("DPLK").Page("Laporan Saldo Peserta").WebEdit("Field Search No.Rekening").Set noRekening
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Laporan Saldo Peserta"), "Cari dan Pilih Data No.Peserta Sesuai Kebutuhan", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Laporan Saldo Peserta").WebElement("Data No.Rekening").SetTOProperty "innertext", noRekening
+	wait 1
+	Browser("DPLK").Page("Laporan Saldo Peserta").WebElement("Data No.Rekening").Click
+	wait 2
+	Browser("DPLK").Page("Laporan Saldo Peserta").WebEdit("Field Tgl Transaksi Awal").Set tglTransaksiAwal
+	wait 1
+	Browser("DPLK").Page("Laporan Saldo Peserta").WebEdit("Field Tgl Transaksi Akhir").Set tglTransaksiAkhir
+	wait 1
+	Browser("DPLK").Page("Laporan Saldo Peserta").WebElement("Dropdown Format Laporan").Click
+	wait 1
+	Browser("DPLK").Page("Laporan Saldo Peserta").WebEdit("Field Search Dropdown").Click
+	wait 1
+	objkey.SendKeys(formatLaporan)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Laporan Saldo Peserta"), "Isi Fields Sesuai Kebutuhan, Kemudian Klik Button Cetak", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Laporan Saldo Peserta").WebButton("Btn Cetak").Click
+'	wait 2
+'	Call OpenPDFFile(namaFile)
+End Sub
+
+REM -------------------------------- Laporan->Laporan Daftar Peserta Berdasarkan Tanggal Buka Rekening -----------------------------------------
+
+'Fungsi Cetak Laporan Daftar Peserta Berdasarkan Tanggal Buka Rekening
+Sub CetakLaporanDaftarPesertaBerdasarkanTanggalBukaRekening
+	
+	namaLaporan				= DataTable.Value("NAMA_LAPORAN",dtlocalsheet)
+	tglBukaRekeningAwal		= DataTable.Value("TGL_BUKA_REKENING_AWAL",dtlocalsheet)
+	tglBukaRekeningAkhir	= DataTable.Value("TGL_BUKA_REKENING_AKHIR",dtlocalsheet)
+	formatLaporan			= DataTable.Value("FORMAT_LAPORAN",dtlocalsheet)
+	namaFile				= DataTable.Value("NAMA_FILE",dtlocalsheet)
+	
+	wait 2
+	Browser("DPLK").Page("Laporan Daftar Peserta Berdasarkan Tanggal Buka Rekening").WebElement("Dropdown Nama Laporan").Click
+	wait 1
+	Browser("DPLK").Page("Laporan Daftar Peserta Berdasarkan Tanggal Buka Rekening").WebEdit("Field Search Dropdown").Click
+	wait 1
+	objkey.SendKeys(namaLaporan)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 2
+	Browser("DPLK").Page("Laporan Daftar Peserta Berdasarkan Tanggal Buka Rekening").WebEdit("Field Tgl Buka Rekening Awal").Set tglBukaRekeningAwal
+	wait 1
+	Browser("DPLK").Page("Laporan Daftar Peserta Berdasarkan Tanggal Buka Rekening").WebEdit("Field Tgl Buka Rekening Akhir").Set tglBukaRekeningAkhir
+	wait 1
+	Browser("DPLK").Page("Laporan Daftar Peserta Berdasarkan Tanggal Buka Rekening").WebElement("Dropdown Format Laporan").Click
+	wait 1
+	Browser("DPLK").Page("Laporan Daftar Peserta Berdasarkan Tanggal Buka Rekening").WebEdit("Field Search Dropdown").Click
+	wait 1
+	objkey.SendKeys(formatLaporan)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Laporan Daftar Peserta Berdasarkan Tanggal Buka Rekening"), "Isi Fields Sesuai Kebutuhan, Kemudian Klik Button Cetak", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Laporan Daftar Peserta Berdasarkan Tanggal Buka Rekening").WebButton("Btn Cetak").Click
+'	wait 2
+'	Call OpenPDFFile(namaFile)
+End Sub

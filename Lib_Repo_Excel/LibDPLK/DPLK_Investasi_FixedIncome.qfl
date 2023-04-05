@@ -1,0 +1,45 @@
+﻿Sub Lihat_Investasi_Fixed_Income_Dealing_Ticket_Fixed_Income 
+	Set objkey = CreateObject("WScript.Shell")
+	wait 3
+	
+	For Iterator = 106 To 108 Step 1
+		If InStr(1, DataTable.Value("TC_ID",dtlocalsheet), "DPLKAKT"&Iterator) <> 0 Then
+			Flag1 = True
+			Exit for
+		End If
+	Next
+	For Iterator = 141 To 143 Step 1
+		If InStr(1, DataTable.Value("TC_ID",dtlocalsheet), "DPLKAKT"&Iterator) <> 0 Then
+			Flag2 = True
+			Exit for
+		End If
+	Next
+	
+		If Flag1 Then
+			Browser("DPLK").Page("Dealing Ticket Fixed Income").WebEdit("Field Search").Set Dokumen_Induk
+		ElseIf Flag2 Then
+			Browser("DPLK").Page("Dealing Ticket Fixed Income").WebEdit("Field Search").Set Tiket_ID
+		End If
+		
+	flag1 = false
+	flag2 = false
+'	If InStr(1, DataTable.Value("TC_ID",dtlocalsheet), "DPLKAKT003") <> 0 Then
+'		Browser("DPLK").Page("Dealing Ticket Fixed Income").WebEdit("Field Search").Set Dokumen_Induk
+'	ElseIf InStr(1, DataTable.Value("TC_ID",dtlocalsheet), "DPLKAKT016") <> 0 Then
+'		Browser("DPLK").Page("Dealing Ticket Fixed Income").WebEdit("Field Search").Set Tiket_ID
+'	ElseIf Dokumen_Indux <> "" Then
+'		Browser("DPLK").Page("Dealing Ticket Fixed Income").WebEdit("Field Search").Set Dokumen_Induk
+'	else
+'		Browser("DPLK").Page("Dealing Ticket Fixed Income").WebEdit("Field Search").Set DataTable.Value("KODE_JURNAL",dtlocalsheet)
+'	End If
+	
+	wait 5
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("Btn Lihat").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Fixed Income"),"Masuk Menu Lihat Data, Berikut Data Yang Dipilih", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	objkey.SendKeys "{PGDN}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Fixed Income"),"Masuk Menu Lihat Data, Berikut Data Yang Dipilih", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub

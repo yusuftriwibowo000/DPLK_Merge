@@ -1,0 +1,1113 @@
+﻿Set objkey		= CreateObject("WScript.Shell")
+Set devices 	= CreateObject("Mercury.DeviceReplay")
+
+'Tipe Transaksi
+Dim kodeTipeTransaksi, namaTipeTransaksi, statusRegister, keteranganRegister
+
+'Profile Fixed Income
+Dim kodeFixedIncome, portofolio, emiten, tipeKupon, namaFixedIncome, bondCode, kodeISIN, tglTerbit, lastKupon, tglMaturity, periodeKupon, persenKupon
+
+'Dealing Ticket Fixed Income
+'(kodeFIxedIncome variabelnya sudah ada di Profile Fixed Income)
+Dim ticketID, klasifikasi, tipeAmortisasi, produk, kegiatan, tipeTransaksi, broker, bankCustody, tradeDate, tglDistribusi, tglSettlement, nomTransaksi, hargaTransaksi, eirPersen, acqPrice, noSurat, tglSurat, keterangan
+
+'Verifikasi Ticket Fixed Income
+Dim statusVerifikasi, keteranganVerifikasi
+
+REM -------------------------------- Global Function -----------------------------------------
+Sub ConfirmOtorisasi
+	Dim password
+	password = DataTable.Value("PASSWORD", dtlocalsheet)
+	If Browser("DPLK").Page("Global").WebElement("Form Otorisasi").Exist(5) Then
+		Browser("DPLK").Page("Global").WebEdit("Field Password Confirm").Set password
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Global"), "Muncul Form Otorisasi, Isi Password yang Anda Gunakan Saat Login Untuk Konfirmasi", " ", compatibilityMode.Desktop, ReportStatus.Done)
+		wait 2
+		Browser("DPLK").Page("Global").WebButton("Btn Submit Delete").Click
+		wait 2
+	End If
+
+End Sub
+
+REM -------------------------------- Tipe Transaksi -----------------------------------------
+
+'Add New Tipe Transaksi
+Sub AddTipeTransaksi
+
+	kodeTipeTransaksi	= DataTable.Value("KODE_TIPE_TRANSAKSI", dtlocalsheet)
+	namaTipeTransaksi	= DataTable.Value("NAMA_TIPE_TRANSAKSI", dtlocalsheet)
+	statusRegister		= DataTable.Value("STATUS_REGISTER", dtlocalsheet)
+	keteranganRegister	= DataTable.Value("KETERANGAN_REGISTER", dtlocalsheet)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi").WebButton("Btn Tambah"), "Klik Button Tambah", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Tipe Transaksi").WebButton("Btn Tambah").Click
+	wait 2
+	Browser("DPLK").Page("Tipe Transaksi").WebEdit("Field Kode Tipe Transaksi").Set kodeTipeTransaksi
+	wait 1
+	Browser("DPLK").Page("Tipe Transaksi").WebEdit("Field Nama Tipe Transaksi").Set namaTipeTransaksi
+	wait 1
+	Browser("DPLK").Page("Tipe Transaksi").WebElement("Dropdown Status Register").Click
+	wait 1
+	Browser("DPLK").Page("Tipe Transaksi").WebEdit("Field Search Data").Click
+	wait 1
+	objkey.SendKeys(statusRegister)
+	wait 1
+	objkey.SendKeys "{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Tipe Transaksi").WebEdit("Field Keterangan Register").Set keteranganRegister
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi"), "Isi Semua Fields yang Dibutuhkan, Kemudian Klik Button Simpan", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Tipe Transaksi").WebButton("Btn Simpan").Click
+	wait 2
+	If Browser("DPLK").Page("Tipe Transaksi").WebElement("PopUp ×Data berhasil ditambah").Exist(5) Then
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi"), "Data Berhasil Ditambahkan", " ", compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+		Browser("DPLK").Page("Tipe Transaksi").WebEdit("Field Search Data").Set namaTipeTransaksi
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi"), "Data Dengan Nama Tipe Transaksi : "&namaTipeTransaksi&" Telah Tersedia" , " ", compatibilityMode.Desktop, ReportStatus.Done)
+	Else
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi"), "Data Gagal Ditambahkan" , " ", compatibilityMode.Desktop, ReportStatus.Passed)
+	End If
+	wait 2
+End Sub
+
+'View Tipe Transaksi
+Sub ViewTipeTransaksi
+
+	namaTipeTransaksi	= DataTable.Value("NAMA_TIPE_TRANSAKSI", dtlocalsheet)
+	
+	Browser("DPLK").Page("Tipe Transaksi").WebEdit("Field Search Data").Set namaTipeTransaksi
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi"), "Search Data yang Akan Dilihat Detailnya", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi").WebElement("Btn View"), "Klik Button View Detail", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Tipe Transaksi").WebElement("Btn View").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi"), "Berikut Detail Data Pada Nama Tipe Transaksi : " &namaTipeTransaksi, " ", compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+'Edit Tipe Transaksi
+Sub EditTipeTransaksi
+
+	kodeTipeTransaksi		= DataTable.Value("KODE_TIPE_TRANSAKSI", dtlocalsheet)
+	namaTipeTransaksi		= DataTable.Value("NAMA_TIPE_TRANSAKSI", dtlocalsheet)
+	splitNamaTipeTransaksi	= Split(namaTipeTransaksi,";") 
+	statusRegister			= DataTable.Value("STATUS_REGISTER", dtlocalsheet)
+	keteranganRegister		= DataTable.Value("KETERANGAN_REGISTER", dtlocalsheet)
+	
+	Browser("DPLK").Page("Tipe Transaksi").WebEdit("Field Search Data").Set splitNamaTipeTransaksi(0)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi"), "Search Data yang Akan Diupdate", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi").WebElement("Btn Edit"), "Klik Button Edit", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Tipe Transaksi").WebElement("Btn Edit").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi"), "Berikut Detail Data Sebelum Diubah", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Tipe Transaksi").WebEdit("Field Nama Tipe Transaksi").Set splitNamaTipeTransaksi(1)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi"), "Ubah Field Sesuai Kebutuhan, Kemudian Klik Button Simpan", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Tipe Transaksi").WebButton("Btn Simpan").Click
+	wait 2
+	If Browser("DPLK").Page("Tipe Transaksi").WebElement("PopUp ×Data berhasil diupdate").Exist(5) Then
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi"), "Data Berhasil Diupdate", " ", compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+		Browser("DPLK").Page("Tipe Transaksi").WebEdit("Field Search Data").Set splitNamaTipeTransaksi(1)
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi"), "Berikut Data Dengan Nama Tipe Transaksi : "&splitNamaTipeTransaksi(1)&" Setelah Diupdate", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	Else
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi"), "Data Gagal Diupdate", " ", compatibilityMode.Desktop, ReportStatus.Passed)
+	End If
+End Sub
+
+'Delete Tipe Transaksi
+Sub DeleteTipeTransaksi
+	
+	namaTipeTransaksi	= DataTable.Value("NAMA_TIPE_TRANSAKSI", dtlocalsheet)
+	
+	Browser("DPLK").Page("Tipe Transaksi").WebEdit("Field Search Data").Set namaTipeTransaksi
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi"), "Search Data yang Akan Dihapus", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi").WebElement("Btn Hapus"), "Klik Button Delete", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Tipe Transaksi").WebElement("Btn Hapus").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi"), "Klik Button Ya, yakin!", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Tipe Transaksi").WebButton("Btn Ya, yakin! Hapus").Click
+	wait 2
+	Call ConfirmOtorisasi()
+	wait 2
+	If Browser("DPLK").Page("Tipe Transaksi").WebElement("Popup ×Data berhasil dihapus").Exist(5) Then
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi"), "Data Dengan Nama Tipe Transaksi : " &namaTipeTransaksi& " Berhasil Dihapus" , " ", compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+		Browser("DPLK").Page("Tipe Transaksi").WebEdit("Field Search Data").Set namaTipeTransaksi
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi"), "Berikut Data Dengan Nama Tipe Transaksi : "&namaTipeTransaksi&" Setelah Dihapus", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	Else
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi"), "Data Dengan Nama Tipe Transaksi : " &namaTipeTransaksi& " Gagal Dihapus" , " ", compatibilityMode.Desktop, ReportStatus.Passed)
+	End If
+	wait 2
+End Sub
+
+'Approve Tipe Transaksi
+Sub ApproveTipeTransaksi
+	Dim namaTipeTransaksi
+	namaTipeTransaksi		= DataTable.Value("NAMA_TIPE_TRANSAKSI", dtlocalsheet)
+	statusVerifikasi		= DataTable.Value("STATUS_VERIFIKASI", dtlocalsheet)
+	keteranganVerifikasi	= DataTable.Value("KETERANGAN_VERIFIKASI", dtlocalsheet)
+	explain					= DataTable.Value("EXPLAIN", dtlocalsheet)
+	
+	wait 2
+	Browser("DPLK").Page("Tipe Transaksi").WebEdit("Field Search Data").Set namaTipeTransaksi
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi"), "Search Data yang Akan "&explain, " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi").WebElement("Btn Checklist Verifikasi"), "Klik Button Checklist", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Tipe Transaksi").WebElement("Btn Checklist Verifikasi").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi"), "Berikut Detail Data Sebelum "&explain, " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	objkey.SendKeys"{PGDN}"
+	wait 1
+	Browser("DPLK").Page("Tipe Transaksi").WebElement("Dropdown Status Verifikasi").Click
+	wait 1
+	Browser("DPLK").Page("Tipe Transaksi").WebEdit("Field Search Data").Click
+	wait 1
+	objkey.SendKeys(statusVerifikasi)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Tipe Transaksi").WebEdit("Field Keterangan Verifikasi").Set keteranganVerifikasi
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi"), "Isi Field Status Verifikasi dan Keterangan Verifikasi, Kemudian Klik Button Simpan", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Tipe Transaksi").WebButton("Btn Simpan").Click
+	wait 2
+	Call ConfirmOtorisasi()
+	If Browser("DPLK").Page("Tipe Transaksi").WebElement("PopUp ×Data berhasil diupdate").Exist(5) Then
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi"), "Data Berhasil "&explain, " ", compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+		Browser("DPLK").Page("Tipe Transaksi").WebEdit("Field Search Data").Set namaTipeTransaksi
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi"), "Berikut Data Dengan Nama Tipe Transaksi : "&namaTipeTransaksi&", Setelah "&explain, " ", compatibilityMode.Desktop, ReportStatus.Done)
+	Else
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Tipe Transaksi"), "Data Gagal "&explain, " ", compatibilityMode.Desktop, ReportStatus.Passed)
+	End If
+	wait 2
+End Sub
+
+REM -------------------------------- Profile Fixed Income -----------------------------------------
+
+'Search Profile Fixed Income
+'Sub SearchProfileFixedIncome
+'	kodeFixedIncome	= DataTable.Value("KODE_FIXED_INCOME", dtlocalsheet)
+'	
+'End Sub
+
+'Add New Profile Fixed Income
+Sub AddProfileFixedIncome
+
+	kodeFixedIncome	= DataTable.Value("KODE_FIXED_INCOME", dtlocalsheet)
+	portofolio		= DataTable.Value("PORTOFOLIO", dtlocalsheet)
+	emiten			= DataTable.Value("EMITEN", dtlocalsheet)
+	tipeKupon		= DataTable.Value("TIPE_KUPON", dtlocalsheet)
+	namaFixedIncome	= DataTable.Value("NAMA_FIXED_INCOME", dtlocalsheet)
+	bondCode		= DataTable.Value("BOND_CODE", dtlocalsheet)
+	kodeISIN		= DataTable.Value("KODE_ISIN", dtlocalsheet)
+	tglTerbit		= DataTable.Value("TGL_TERBIT", dtlocalsheet)
+	lastKupon		= DataTable.Value("LAST_KUPON", dtlocalsheet)
+	tglMaturity		= DataTable.Value("TGL_MATURITY", dtlocalsheet)
+	periodeKupon	= DataTable.Value("PERIODE_KUPON", dtlocalsheet)
+	persenKupon		= DataTable.Value("PERSEN_KUPON", dtlocalsheet)
+
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income").WebButton("Btn Tambah"), "Klik Button Tambah", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Profile Fixed Income").WebButton("Btn Tambah").Click
+	wait 2
+	Browser("DPLK").Page("Profile Fixed Income").WebElement("Dropdown Portofolio").Click
+	wait 1
+	Browser("DPLK").Page("Profile Fixed Income").WebEdit("Field Search Data").Click
+	wait 1
+	objkey.SendKeys(portofolio)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Profile Fixed Income").WebElement("Dropdown Emiten").Click
+	wait 1
+	Browser("DPLK").Page("Profile Fixed Income").WebEdit("Field Search Data").Click
+	wait 1
+	objkey.SendKeys(emiten)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Profile Fixed Income").WebElement("Dropdown Tipe Kupon").Click
+	wait 1
+	Browser("DPLK").Page("Profile Fixed Income").WebEdit("Field Search Data").Click
+	wait 1
+	objkey.SendKeys(tipeKupon)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Profile Fixed Income").WebEdit("Field Nama Fixed Income").Set namaFixedIncome
+	wait 1
+	Browser("DPLK").Page("Profile Fixed Income").WebEdit("Field Bond Code").Set bondCode
+	wait 1
+	Browser("DPLK").Page("Profile Fixed Income").WebEdit("Field Kode ISIN").Set kodeISIN
+	wait 1
+	Browser("DPLK").Page("Profile Fixed Income").WebEdit("Field Tgl Terbit").Set tglTerbit
+	wait 1
+	Browser("DPLK").Page("Profile Fixed Income").WebEdit("Field Last Kupon").Set lastKupon
+	wait 1
+	Browser("DPLK").Page("Profile Fixed Income").WebEdit("Field Tgl Maturity").Set tglMaturity
+	wait 1
+	Browser("DPLK").Page("Profile Fixed Income").WebNumber("Field Periode Kupon").Set periodeKupon
+	wait 1
+	Browser("DPLK").Page("Profile Fixed Income").WebEdit("Field Persen Kupon").Set persenKupon
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income"), "Isi Semua Fields yang Dibutuhkan, Kemudian Klik Button Simpan", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Profile Fixed Income").WebButton("Btn Simpan").Click
+	wait 2
+	If Browser("DPLK").Page("Profile Fixed Income").WebElement("PopUp ×Data berhasil ditambah").Exist(5) Then
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income"), "Data Berhasil Ditambahkan", " ", compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+		fieldKodeFixedIncome = Browser("DPLK").Page("Profile Fixed Income").WebEdit("Field Kode Fixed Income").GetROProperty("value")
+		wait 1
+		Browser("DPLK").Page("Profile Fixed Income").WebButton("Btn Kembali").Click
+		wait 2
+		Browser("DPLK").Page("Profile Fixed Income").WebEdit("Field Search Data").Set fieldKodeFixedIncome
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income"), "Data Dengan Kode Fixed Income : "&fieldKodeFixedIncome&" Telah Tersedia" , " ", compatibilityMode.Desktop, ReportStatus.Done)
+	Else
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income"), "Data Gagal Ditambahkan" , " ", compatibilityMode.Desktop, ReportStatus.Passed)
+	End If
+	wait 2
+End Sub
+
+'View Profile Fixed Income
+Sub ViewProfileFixedIncome
+
+	kodeFixedIncome	= DataTable.Value("KODE_FIXED_INCOME", dtlocalsheet)
+	
+	Browser("DPLK").Page("Profile Fixed Income").WebEdit("Field Search Data").Set kodeFixedIncome
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income"), "Search Data yang Akan Dilihat Detailnya", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income").WebElement("Btn View"), "Klik Button View Detail", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Profile Fixed Income").WebElement("Btn View").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income"), "Berikut Detail Data Pada Kode Fixed Income : " &kodeFixedIncome, " ", compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+'Edit Profile Fixed Income
+Sub EditProfileFixedIncome
+
+	kodeFixedIncome	= DataTable.Value("KODE_FIXED_INCOME", dtlocalsheet)
+	portofolio		= DataTable.Value("PORTOFOLIO", dtlocalsheet)
+	emiten			= DataTable.Value("EMITEN", dtlocalsheet)
+	tipeKupon		= DataTable.Value("TIPE_KUPON", dtlocalsheet)
+	namaFixedIncome	= DataTable.Value("NAMA_FIXED_INCOME", dtlocalsheet)
+	bondCode		= DataTable.Value("BOND_CODE", dtlocalsheet)
+	kodeISIN		= DataTable.Value("KODE_ISIN", dtlocalsheet)
+	tglTerbit		= DataTable.Value("TGL_TERBIT", dtlocalsheet)
+	lastKupon		= DataTable.Value("LAST_KUPON", dtlocalsheet)
+	tglMaturity		= DataTable.Value("TGL_MATURITY", dtlocalsheet)
+	periodeKupon	= DataTable.Value("PERIODE_KUPON", dtlocalsheet)
+	persenKupon		= DataTable.Value("PERSEN_KUPON", dtlocalsheet)
+	
+	Browser("DPLK").Page("Profile Fixed Income").WebEdit("Field Search Data").Set kodeFixedIncome
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income"), "Search Data yang Akan Diupdate", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income").WebElement("Btn Edit"), "Klik Button Edit", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Profile Fixed Income").WebElement("Btn Edit").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income"), "Berikut Detail Data Sebelum Diubah", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Profile Fixed Income").WebEdit("Field Nama Fixed Income").Set namaFixedIncome
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income"), "Ubah Field Sesuai Kebutuhan, Kemudian Klik Button Simpan", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Profile Fixed Income").WebButton("Btn Simpan").Click
+	wait 2
+	If Browser("DPLK").Page("Profile Fixed Income").WebElement("PopUp ×Data berhasil diupdate").Exist(5) Then
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income"), "Data Berhasil Diupdate", " ", compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+		Browser("DPLK").Page("Profile Fixed Income").WebButton("Btn Kembali").Click
+		wait 2
+		Browser("DPLK").Page("Profile Fixed Income").WebEdit("Field Search Data").Set kodeFixedIncome
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income"), "Berikut Data Dengan Kode Fixed Income : "&kodeFixedIncome&" Setelah Diupdate", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	Else
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income"), "Data Gagal Diupdate", " ", compatibilityMode.Desktop, ReportStatus.Passed)
+	End If
+End Sub
+
+'Delete Profile Fixed Income
+Sub DeleteProfileFixedIncome
+	
+	kodeFixedIncome	= DataTable.Value("KODE_FIXED_INCOME", dtlocalsheet)
+	
+	Browser("DPLK").Page("Profile Fixed Income").WebEdit("Field Search Data").Set kodeFixedIncome
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income"), "Search Data yang Akan Dihapus", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income").WebElement("Btn Hapus"), "Klik Button Delete", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Profile Fixed Income").WebElement("Btn Hapus").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income"), "Klik Button Ya, yakin!", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Profile Fixed Income").WebButton("Btn Ya, yakin! Hapus").Click
+	wait 2
+	Call ConfirmOtorisasi()
+	wait 2
+	If Browser("DPLK").Page("Profile Fixed Income").WebElement("Popup ×Data berhasil dihapus").Exist(5) Then
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income"), "Data Dengan Kode Fixed Income : " &kodeFixedIncome& " Berhasil Dihapus" , " ", compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+		Browser("DPLK").Page("Profile Fixed Income").WebEdit("Field Search Data").Set kodeFixedIncome
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income"), "Berikut Data Dengan Kode Fixed Income : "&kodeFixedIncome&" Setelah Dihapus", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	Else
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income"), "Data Dengan Kode Fixed Income : " &kodeFixedIncome& " Gagal Dihapus" , " ", compatibilityMode.Desktop, ReportStatus.Passed)
+	End If
+	wait 2
+End Sub
+
+'Batalkan Verifikasi Profile Fixed Income
+Sub UnverifiedProfileFixedIncome
+	kodeFixedIncome		= DataTable.Value("KODE_FIXED_INCOME", dtlocalsheet)
+	explain				= DataTable.Value("EXPLAIN", dtlocalsheet)
+	
+	Browser("DPLK").Page("Profile Fixed Income").WebEdit("Field Search Data").Set kodeFixedIncome
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income"), "Search Data yang Akan "&explain, " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income").WebElement("Btn Unverified"), "Klik Button Batal Verifikasi", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Profile Fixed Income").WebElement("Btn Unverified").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income"), "Klik Button Ya, yakin!", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Profile Fixed Income").WebButton("Btn Ya, yakin! Hapus").Click
+	wait 2
+	Call ConfirmOtorisasi()
+	If Browser("DPLK").Page("Profile Fixed Income").WebElement("Popup ×Data berhasil dihapus").Exist(5) Then
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income"), "Data Dengan Kode Fixed Income : " &kodeFixedIncome& " Berhasil "&explain, " ", compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+		Browser("DPLK").Page("Profile Fixed Income").WebEdit("Field Search Data").Set kodeFixedIncome
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income"), "Berikut Data Dengan Kode Fixed Income : "&kodeFixedIncome&" Setelah "&explain, " ", compatibilityMode.Desktop, ReportStatus.Done)
+		wait 2
+		x = Browser("DPLK").Page("Profile Fixed Income").WebElement("Tabel Data").GetROProperty("abs_x")
+ 		y = Browser("DPLK").Page("Profile Fixed Income").WebElement("Tabel Data").GetROProperty("abs_y")
+ 		devices.MouseMove x,y
+		devices.MouseClick x,y, LEFT_MOUSE_BUTTON
+		wait 2
+		objkey.SendKeys "{RIGHT 10}"
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income"), "Berikut Data Dengan Kode Fixed Income : "&kodeFixedIncome&" Setelah "&explain, " ", compatibilityMode.Desktop, ReportStatus.Done)
+	Else
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Profile Fixed Income"), "Data Dengan Kode Fixed Income : " &kodeFixedIncome& " Gagal "&explain, " ", compatibilityMode.Desktop, ReportStatus.Passed)
+	End If
+	wait 2
+End Sub
+
+REM -------------------------------- Fixed Income -> Verifikasi -> Verifikasi Profile Fixed Income -----------------------------------------
+
+' Approve Verifikasi Profile Fixed Income
+Sub ApproveProfileFixedIncome
+	
+	kodeFixedIncome			= DataTable.Value("KODE_FIXED_INCOME", dtlocalsheet)
+	statusVerifikasi		= DataTable.Value("STATUS_VERIFIKASI", dtlocalsheet)
+	keteranganVerifikasi	= DataTable.Value("KETERANGAN_VERIFIKASI", dtlocalsheet)
+	explain					= DataTable.Value("EXPLAIN", dtlocalsheet)
+	
+	Browser("DPLK").Page("Verifikasi Profile Fixed Income").WebEdit("Field Search Data").Set kodeFixedIncome
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Profile Fixed Income"), "Search Data yang Akan " &explain, " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Profile Fixed Income").WebElement("Btn Checklist Verifikasi"), "Klik Button Checklist Verifikasi", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Verifikasi Profile Fixed Income").WebElement("Btn Checklist Verifikasi").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Profile Fixed Income"), "Berikut Detail Data Sebelum "&explain, " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	objkey.SendKeys "{PGDN}"
+	wait 1
+	Browser("DPLK").Page("Verifikasi Profile Fixed Income").WebElement("Dropdown Status Verifikasi").Click
+	wait 1
+	Browser("DPLK").Page("Profile Fixed Income").WebEdit("Field Search Data").Click
+	wait 1
+	objkey.SendKeys(statusVerifikasi)
+	wait 1
+	objkey.SendKeys "{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Verifikasi Profile Fixed Income").WebEdit("Field Keterangan Verifikasi").Set keteranganVerifikasi
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Profile Fixed Income"), "Isi Field Status Verifikasi dan Keterangan Verifikasi, Kemudian Klik Button Simpan", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Verifikasi Profile Fixed Income").WebButton("Btn Simpan").Click
+	wait 2
+	Call ConfirmOtorisasi()
+	If Browser("DPLK").Page("Verifikasi Profile Fixed Income").WebElement("PopUp ×Data berhasil diverifikasi").Exist(5) Then
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Profile Fixed Income"), "Data dengan Kode Fixed Income : "&kodeFixedIncome&" Berhasil "&explain, " ", compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+		Browser("DPLK").Page("Verifikasi Profile Fixed Income").WebEdit("Field Search Data").Set kodeFixedIncome
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Profile Fixed Income"), "Berikut Data dengan Kode Fixed Income : "&kodeFixedIncome&" Setelah "&explain, " ", compatibilityMode.Desktop, ReportStatus.Done)
+	Else
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Profile Fixed Income"), "Data dengan Kode Fixed Income : "&kodeFixedIncome&" Gagal "&explain, " ", compatibilityMode.Desktop, ReportStatus.Passed)
+	End If
+	wait 2
+End Sub
+
+REM -------------------------------- Fixed Income -> Entry Transaksi -> Dealing Ticket Fixed Income -----------------------------------------
+
+'Search Dealing Ticket Fixed Income
+Sub SearchDealingTicketFixedIncome(dtSearch, dtExplain)
+	
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebEdit("Field Search Data").Set dtSearch
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Fixed Income"), "Berikut Data Dealing Ticket Fixed Income Dengan "&dtExplain&" : "&dtSearch, " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	x = Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("Tabel Data").GetROProperty("abs_x")
+	y = Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("Tabel Data").GetROProperty("abs_y")
+	devices.MouseMove x,y
+	devices.MouseClick x,y, LEFT_MOUSE_BUTTON
+	wait 1
+	objkey.SendKeys"{RIGHT 22}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Fixed Income"), "Berikut Data Dealing Ticket Fixed Income Dengan "&dtExplain&" : "&dtSearch, " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	objkey.SendKeys"{RIGHT 5}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Fixed Income"), "Berikut Data Dealing Ticket Fixed Income Dengan "&dtExplain&" : "&dtSearch, " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+End Sub
+
+'Add Dealing Ticket Fixed Income
+Sub AddDealingTicketFixedIncome
+	kodeEntitas				= DataTable.Value("KODE_ENTITAS",dtlocalsheet)
+	kantor					= DataTable.Value("KANTOR",dtlocalsheet)
+	fundManager				= DataTable.Value("FUND_MANAGER",dtlocalsheet)
+	klasifikasi				= DataTable.Value("KLASIFIKASI",dtlocalsheet)
+	tipeAmortisasi			= DataTable.Value("TIPE_AMORTISASI",dtlocalsheet)
+	produk					= DataTable.Value("PRODUK",dtlocalsheet)
+	kegiatan				= DataTable.Value("KEGIATAN",dtlocalsheet)
+	kodeFixedIncome			= DataTable.Value("KODE_FIXED_INCOME",dtlocalsheet)
+	valuta					= DataTable.Value("VALUTA",dtlocalsheet)
+	tipeTransaksi			= DataTable.Value("TIPE_TRANSAKSI",dtlocalsheet)
+	jenisTransaksi			= DataTable.Value("JENIS_TRANSAKSI",dtlocalsheet)
+	broker					= DataTable.Value("BROKER",dtlocalsheet)
+	picBroker				= DataTable.Value("PIC_BROKER",dtlocalsheet)
+	bankBroker				= DataTable.Value("BANK_BROKER",dtlocalsheet)
+	rekGiroDPLK				= DataTable.Value("REK_GIRO_DPLK",dtlocalsheet)
+	bankCustody				= DataTable.Value("BANK_CUSTODY",dtlocalsheet)
+	tradeDate				= DataTable.Value("TRADE_DATE",dtlocalsheet)
+	tglDistribusi			= DataTable.Value("TGL_DISTRIBUSI",dtlocalsheet)
+	tglSettlement			= DataTable.Value("TGL_SETTLEMENT",dtlocalsheet)
+	nomTransaksi			= DataTable.Value("NOM_TRANSAKSI",dtlocalsheet)
+	hargaTransaksi			= DataTable.Value("HARGA_TRANSAKSI",dtlocalsheet)
+	eirPersen				= DataTable.Value("EIR_PERSEN",dtlocalsheet)
+	acqPrice				= DataTable.Value("ACQ_PRICE",dtlocalsheet)
+	noSurat					= DataTable.Value("NO_SURAT",dtlocalsheet)
+	tglSurat				= DataTable.Value("TGL_SURAT",dtlocalsheet)
+	keterangan				= DataTable.Value("KETERANGAN",dtlocalsheet)
+	
+	
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Fixed Income").WebButton("Btn Tambah"), "Klik Button Tambah", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebButton("Btn Tambah").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Fixed Income"), "Berikut Tampilan Tambah DEALING TICKET FIXED INCOME", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	objkey.SendKeys"{PGDN}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Fixed Income"), "Berikut Tampilan Tambah DEALING TICKET FIXED INCOME", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	objkey.SendKeys"{PGUP}"
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("Dropdown Kode Entitas").Click
+	wait 1
+	objkey.SendKeys(kodeEntitas)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("Dropdown Kantor").Click
+	wait 1
+	objkey.SendKeys(kantor)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("Dropdown Fund Manager").Click
+	wait 1
+	objkey.SendKeys(fundManager)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("Dropdown Klasifikasi").Click
+	wait 1
+	objkey.SendKeys(klasifikasi)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("Dropdown Tipe Amortisasi").Click
+	wait 1
+	objkey.SendKeys(tipeAmortisasi)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("Dropdown Produk").Click
+	wait 1
+	objkey.SendKeys(produk)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("Dropdown Kegiatan").Click
+	wait 1
+	objkey.SendKeys(kegiatan)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Fixed Income").WebButton("Btn Kode Fixed Income"), "Klik Button Search Kode Fixed Income", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebButton("Btn Kode Fixed Income").Click
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebEdit("Field Search Kode Fixed Income").Set kodeFixedIncome
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Fixed Income"), "Cari Data Lalu Klik Data Fixed Income yang Dibutuhkan", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("Data Kode Fixed Income").SetTOProperty "innertext", kodeFixedIncome
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("Data Kode Fixed Income").Click
+	wait 3
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("Dropdown Valuta").Click
+	wait 1
+	objkey.SendKeys(valuta)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("Dropdown Tipe Transaksi").Click
+	wait 1
+	objkey.SendKeys(tipeTransaksi)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("Dropdown Jenis Transaksi").Click
+	wait 1
+	objkey.SendKeys(jenisTransaksi)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("Dropdown Broker").Click
+	wait 1
+	objkey.SendKeys(broker)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("Dropdown PIC Broker").Click
+	wait 1
+	objkey.SendKeys(picBroker)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("Dropdown Bank Broker").Click
+	wait 1
+	objkey.SendKeys(bankBroker)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Fixed Income").WebButton("Btn Rek.Giro DPLK"), "Klik Button Search Rek Giro DPLK", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebButton("Btn Rek.Giro DPLK").Click
+	wait 3
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebEdit("Field Search Rek.Giro DPLK").Set rekGiroDPLK
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Fixed Income"), "Cari Data Lalu Klik Data Rek Giro DPLK yang Dibutuhkan", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("Data Rek.Giro DPLK").Click
+	wait 3
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("Dropdown Bank Custody").Click
+	wait 1
+	objkey.SendKeys(bankCustody)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebEdit("Field Trade Date").Set tradeDate
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebEdit("Field Tgl Distribusi").Set tglDistribusi
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebEdit("Field Tgl Settlement").Set tglSettlement
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebEdit("Field Nom.Transaksi").Set nomTransaksi
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebEdit("Field Harga Transaksi").Set hargaTransaksi
+	wait 1
+	If klasifikasi = "HTM" Then
+		Browser("DPLK").Page("Dealing Ticket Fixed Income").WebEdit("Field Eir Persen").Set eirPersen
+	End If
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebEdit("Field Acq.Price").Set acqPrice
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebEdit("Field No.Surat").Set noSurat
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebEdit("Field Tgl Surat").Set tglSurat
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebEdit("Field Keterangan").Set keterangan
+	wait 1
+	objkey.SendKeys"{PGUP}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Fixed Income"), "Isi Fields Sesuai Kebutuhan", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	objkey.SendKeys"{PGDN}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Fixed Income"), "Isi Fields Sesuai Kebutuhan, Kemudian Klik Button Simpan", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebButton("Btn Simpan").Click
+	wait 2
+	If Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("PopUp ×Data berhasil ditambah").Exist(5) Then
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Fixed Income"), "Berhasil Tambah Data Dealing Ticket Fixed Income", " ", compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+		dtSearch = Browser("DPLK").Page("Dealing Ticket Fixed Income").WebEdit("Field Ticket ID").GetROProperty("value")
+		wait 1
+		Browser("DPLK").Page("Dealing Ticket Fixed Income").WebButton("Btn Kembali").Click
+		wait 2
+		Call SearchDealingTicketFixedIncome(dtSearch, dtExplain)
+	Else
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Fixed Income"), "Gagal Tambah Data Dealing Ticket Fixed Income", " ", compatibilityMode.Desktop, ReportStatus.Passed)
+	End If
+	wait 2
+End Sub
+
+'Edit Data Dealing Ticket Fixed Income
+Sub EditDealingTicketFixedIncome
+	ticketID	= DataTable.Value("TICKET_ID",dtlocalsheet)
+	noSurat		= DataTable.Value("NO_SURAT",dtlocalsheet)
+	
+	wait 2
+	Call SearchDealingTicketFixedIncome()
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("Btn Edit"), "Klik Button Edit", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("Btn Edit").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Fixed Income"), "Berikut Detail Data Dengan Ticket ID : "&ticketID, " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	objkey.SendKeys"{PGDN}"
+	wait 2
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebEdit("Field No.Surat").Set noSurat
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Fixed Income"), "Edit Field No.Surat Dengan : "&noSurat&", Kemudian Klik Button Simpan" , " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Dealing Ticket Fixed Income").WebButton("Btn Simpan").Click
+	wait 2
+	If Browser("DPLK").Page("Dealing Ticket Fixed Income").WebElement("PopUp ×Data berhasil diupdate").Exist(5) Then
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Fixed Income"), "Berhasil Edit Data Dealing Ticket Fixed Income", " ", compatibilityMode.Desktop, ReportStatus.Passed)
+	Else
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Fixed Income"), "Gagal Edit Data Dealing Ticket Fixed Income", " ", compatibilityMode.Desktop, ReportStatus.Passed)
+	End If
+	wait 2
+End Sub
+
+REM -------------------------- Fixed Income -> Entry Transaksi -> Dealing Ticket Order Fixed Income ------------------------------
+
+'Search Dealing Ticket Order Fixed Income
+Sub SearchDealingTicketOrderFixedIncome(dtSearch, dtExplain)
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebEdit("Field Search Data").Set dtSearch
+	wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Order Fixed Income"), "Berikut Data Dengan "&dtExplain&" : "&dtSearch, " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+End Sub
+
+'Add Dealing Ticket Order Fixed Income
+Sub AddDealingTicketOrderFixedIncome
+	kodeEntitas			= DataTable.Value("KODE_ENTITAS",dtlocalsheet)
+	kantor				= DataTable.Value("KANTOR",dtlocalsheet)
+	fundManager			= DataTable.Value("FUND_MANAGER",dtlocalsheet)
+	klasifikasi			= DataTable.Value("KLASIFIKASI",dtlocalsheet)
+	produk				= DataTable.Value("PRODUK",dtlocalsheet)
+	kegiatan			= DataTable.Value("KEGIATAN",dtlocalsheet)
+	kodeFixedIncome		= DataTable.Value("KODE_FIXED_INCOME",dtlocalsheet)
+	tipeTransaksi		= DataTable.Value("TIPE_TRANSAKSI",dtlocalsheet)
+	broker				= DataTable.Value("BROKER",dtlocalsheet)
+	bankCustody			= DataTable.Value("BANK_CUSTODY",dtlocalsheet)
+	tglOrder			= DataTable.Value("TGL_ORDER",dtlocalsheet)
+	tglSettlement		= DataTable.Value("TGL_SETTLEMENT",dtlocalsheet)
+	nomOrder			= DataTable.Value("NOM_ORDER",dtlocalsheet)
+	nomOrderLimit		= DataTable.Value("NOM_ORDER_LIMIT",dtlocalsheet)
+	hargaOrder			= DataTable.Value("HARGA_ORDER",dtlocalsheet)
+	noSurat				= DataTable.Value("NO_SURAT",dtlocalsheet)
+	tglSurat			= DataTable.Value("TGL_SURAT",dtlocalsheet)
+	keterangan			= DataTable.Value("KETERANGAN",dtlocalsheet)
+	dtExplain			= "Order ID"
+	
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebButton("Btn Tambah"), "Klik Button Tambah", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebButton("Btn Tambah").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Order Fixed Income"), "Berikut Halaman Tambah DEALING TICKET ORDER FIXED INCOME", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	objkey.SendKeys"{PGDN}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Order Fixed Income"), "Berikut Halaman Tambah DEALING TICKET ORDER FIXED INCOME", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	objkey.SendKeys"{PGUP}"
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebElement("Dropdown Kode Entitas").Click
+	wait 1
+	objkey.SendKeys(kodeEntitas)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebElement("Dropdown Kantor").Click
+	wait 1
+	objkey.SendKeys(kantor)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebElement("Dropdown Fund Manager").Click
+	wait 1
+	objkey.SendKeys(fundManager)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebElement("Dropdown Klasifikasi").Click
+	wait 1
+	objkey.SendKeys(klasifikasi)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebElement("Dropdown Produk").Click
+	wait 1
+	objkey.SendKeys(produk)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebElement("Dropdown Kegiatan").Click
+	wait 1
+	objkey.SendKeys(kegiatan)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebButton("Btn Search Kode Fixed Income"), "Klik Button Search Kode Fixed Income", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebButton("Btn Search Kode Fixed Income").Click
+	wait 2
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebEdit("Field Search Kode Fixed Income").Set kodeFixedIncome
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Order Fixed Income"), "Cari dan Pilih Data Kode Fixed Income", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebElement("Data Kode Fixed Income").SetTOProperty "innertext", kodeFixedIncome
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebElement("Data Kode Fixed Income").Click
+	wait 2
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebElement("Dropdown Tipe Transaksi").Click
+	wait 1
+	objkey.SendKeys(tipeTransaksi)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebElement("Dropdown Broker").Click
+	wait 1
+	objkey.SendKeys(broker)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebElement("Dropdown Bank Custody").Click
+	wait 1
+	objkey.SendKeys(bankCustody)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebEdit("Field Tgl Order").Set tglOrder
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebEdit("Field Tgl Settlement").Set tglSettlement
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebEdit("Field Nominal Order").Set nomOrder
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebEdit("Field Nominal Order Limit").Set nomOrderLimit
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebEdit("Harga Order Persen").Set hargaOrder
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebEdit("Field No.Surat").Set noSurat
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebEdit("Field Tgl Surat").Set tglSurat
+	wait 1
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebEdit("Field Keterangan").Set keterangan
+	wait 1
+	objkey.SendKeys"{PGUP}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Order Fixed Income"), "Isi Semua Fields yang Dibutuhkan", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	objkey.SendKeys"{PGDN}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Order Fixed Income"), "Isi Semua Fields yang Dibutuhkan, Kemudian Klik Button Simpan", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebButton("Btn Simpan").Click
+	wait 2
+	If Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebElement("PopUp ×Data berhasil ditambah").Exist(5) Then
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Order Fixed Income"), "Berhasil Tambah Data", " ", compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+		dtSearch = Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebEdit("Field Order ID").GetROProperty("value")
+		wait 1
+		Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebButton("Btn Kembali").Click
+		wait 2
+		Call SearchDealingTicketOrderFixedIncome(dtSearch,dtExplain)
+	Else
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Order Fixed Income"), "Gagal Tambah Data", " ", compatibilityMode.Desktop, ReportStatus.Passed)
+	End If
+	wait 2
+End Sub
+
+'Cetak Dealing Ticket Order Fixed Income
+Sub CetakDealingTicketOrderFixedIncome
+	dtSearch		= DataTable.Value("ORDER_ID",dtlocalsheet)
+	penandatanganan	= DataTable.Value("PENANDATANGAN",dtlocalsheet)
+	namaFile		= DataTable.Value("NAMA_FILE",dtlocalsheet)
+	dtExplain		= "Order ID"
+	
+	wait 2
+	Call SearchDealingTicketOrderFixedIncome(dtSearch,dtExplain)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebElement("Btn Edit"), "Klik Button Edit", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebElement("Btn Edit").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Order Fixed Income"), "Berikut Detail Data Dengan "&dtExplain&" : "&dtSearch, " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebElement("Dropdown Penandatangan 1").Click
+	wait 1
+	objkey.SendKeys(penandatanganan)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Order Fixed Income"), "Isi Field Penandatangan, Kemudian Klik Button Cetak Surat", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Dealing Ticket Order Fixed Income").WebButton("Btn Cetak Surat").Click
+	wait 2
+	Call OpenPDFFile(namaFile)
+End Sub
+
+'Open Pdf Download
+Sub OpenPDFFile(namaFile)
+	wait 10
+	objkey.SendKeys"^j"
+	wait 2
+	objkey.SendKeys "^f"
+	wait 2
+	objkey.SendKeys(namaFile)
+	wait 2
+	objkey.SendKeys"{TAB 3}"
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 5
+	objkey.SendKeys"{TAB 12}"
+	wait 2
+	Call CaptureImageUFTV2(Window("SS_Full_Screen"), "Berikut Detail Dari File "&namaFile, " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	y = 384
+	x = 683
+	devices.MouseMove x,y
+	devices.MouseClick x,y, LEFT_MOUSE_BUTTON
+	wait 1
+	objkey.SendKeys"{DOWN 14}"
+	wait 2
+	Call CaptureImageUFTV2(Window("SS_Full_Screen"), "Berikut Detail Dari File "&namaFile, " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+End Sub
+
+REM -------------------------------- Fixed Income -> Verifikasi -> Verifikasi Ticket Fixed Income --------------------------------------
+
+'Search Verifikasi Ticket Fixed Income
+Sub SearchVerifikasiTicketFixedIncome(dtSearch, dtExplain)
+	
+	Browser("DPLK").Page("Verifikasi Ticket Fixed Income").WebEdit("Field Search Data").Set dtSearch
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Ticket Fixed Income"), "Berikut Data Dengan "&dtExplain&" : "&dtSearch , " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	x = Browser("DPLK").Page("Verifikasi Ticket Fixed Income").WebElement("Tabel Data").GetROProperty("abs_x")
+	y = Browser("DPLK").Page("Verifikasi Ticket Fixed Income").WebElement("Tabel Data").GetROProperty("abs_y")
+	devices.MouseMove x,y
+	devices.MouseClick x,y, LEFT_MOUSE_BUTTON
+	wait 1
+	objkey.SendKeys"{RIGHT 20}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Ticket Fixed Income"), "Berikut Data Dengan "&dtExplain&" : "&dtSearch , " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	
+End Sub
+
+'Verifikasi Ticket Fixed Income
+Sub VerifikasiTicketFixedIncome
+	statusVerifikasi		= DataTable.Value("STATUS_VERIFIKASI",dtlocalsheet)
+	keteranganVerifikasi	= DataTable.Value("KETERANGAN_VERIFIKASI",dtlocalsheet)
+	dtExplain				= "Ticket ID"
+	dtSearch				= DataTable.Value("TICKET_ID",dtlocalsheet)
+	explain					= DataTable.Value("EXPLAIN",dtlocalsheet)
+	
+	wait 2
+	Call SearchVerifikasiTicketFixedIncome(dtSearch,dtExplain)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Ticket Fixed Income").WebElement("Btn Checklist Verifikasi"), "Klik Button Checklist Verifikasi", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Verifikasi Ticket Fixed Income").WebElement("Btn Checklist Verifikasi").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Ticket Fixed Income"), "Berikut Detail Data Dengan "&dtExplain&" : "&dtSearch , " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	objkey.SendKeys"{PGDN}"
+	wait 1
+	Browser("DPLK").Page("Verifikasi Ticket Fixed Income").WebElement("Dropdown Status Verifikasi").Click
+	wait 1
+	objkey.SendKeys(statusVerifikasi)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Verifikasi Ticket Fixed Income").WebEdit("Field Keterangan Verifikasi").Set keteranganVerifikasi
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Ticket Fixed Income"), "Isi Field Status Verifikasi dan Keterangan Verifikasi, Kemudian Klik Button Simpan Untuk Memverifikasi Data", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Verifikasi Ticket Fixed Income").WebButton("Btn Simpan").Click
+	wait 2
+	Call ConfirmOtorisasi()
+	wait 2
+	If Browser("DPLK").Page("Verifikasi Ticket Fixed Income").WebElement("PopUp ×Data berhasil diverifikasi").Exist(5) Then
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Ticket Fixed Income"), "Berhasil Verifikasi Data", " ", compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+'		Browser("DPLK").Page("Dashboard").WebElement("Dropdown Cari Menu").Click
+'		wait 1
+'		objkey.SendKeys("Dealing Ticket Fixed Income")
+'		wait 1
+'		objkey.SendKeys"{ENTER}"
+'		wait 3
+'		Call CaptureImageUFTV2(Browser("DPLK").Page("Dealing Ticket Fixed Income"), "Masuk Ke Menu Dealing Ticket Fixed Income", " ", compatibilityMode.Desktop, ReportStatus.Passed)
+'		wait 2
+'		Call SearchDealingTicketFixedIncome()
+'		Call SearchVerifikasiTicketFixedIncome(dtSearch,dtExplain)
+		Browser("DPLK").Page("Verifikasi Ticket Fixed Income").WebEdit("Field Search Data").Set dtSearch
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Ticket Fixed Income"), "Berikut Data Dengan "&dtExplain&" : "&dtSearch , " ", compatibilityMode.Desktop, ReportStatus.Done)
+		wait 2
+	Else
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Ticket Fixed Income"), "Gagal Verifikasi Data", " ", compatibilityMode.Desktop, ReportStatus.Passed)
+	End If
+	wait 2
+End Sub
+
+REM -------------------------------- Fixed Income -> Pembatalan -> Pembatalan Ticket Fixed Income -----------------------------------------
+
+'Search Pembatalan Ticket Fixed Income
+Sub SearchPembatalanTicketFixedIncome(dtSearch, dtExplain)
+	Browser("DPLK").Page("Pembatalan Ticket Fixed Income").WebEdit("Field Search Data").Set dtSearch
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Pembatalan Ticket Fixed Income"), "Berikut Data Dengan "&dtExplain&" : "&dtSearch, " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+End Sub
+
+'Add Pembatalan Ticket Fixed Income
+Sub AddPembatalanTicketFixedIncome
+	ticketID		= DataTable.Value("TICKET_ID",dtlocalsheet)
+	tglPengajuan	= DataTable.Value("TGL_PENGAJUAN",dtlocalsheet)
+	keterangan		= DataTable.Value("KETERANGAN",dtlocalsheet)
+	dtExplain		= "Ticket ID"
+	dtSearch		= ticketID
+	
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Pembatalan Ticket Fixed Income").WebButton("Btn Tambah"), "Klik Button Tambah", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Pembatalan Ticket Fixed Income").WebButton("Btn Tambah").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Pembatalan Ticket Fixed Income"), "Berikut Halaman Tambah Pembatalan Ticket Fixed Income", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Pembatalan Ticket Fixed Income").WebButton("Btn Search Ticket ID"), "Klik Button Search Ticket ID", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Pembatalan Ticket Fixed Income").WebButton("Btn Search Ticket ID").Click
+	wait 3
+	Browser("DPLK").Page("Pembatalan Ticket Fixed Income").WebEdit("Field Search Ticket ID").Set ticketID
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Pembatalan Ticket Fixed Income"), "Cari dan Pilih Data Ticket ID yang Dibutuhkan", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Pembatalan Ticket Fixed Income").WebElement("Data Ticket ID").SetTOProperty "innertext", ticketID
+	wait 1
+	Browser("DPLK").Page("Pembatalan Ticket Fixed Income").WebElement("Data ticket ID").Click
+	wait 3
+	Browser("DPLK").Page("Pembatalan Ticket Fixed Income").WebEdit("Field Tgl Pengajuan").Set tglPengajuan
+	wait 1
+	Browser("DPLK").Page("Pembatalan Ticket Fixed Income").WebEdit("Field Keterangan").Set keterangan
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Pembatalan Ticket Fixed Income"), "Isi Semua Fields Sesuai Kebutuhan, Kemudian Klik Button Simpan", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Pembatalan Ticket Fixed Income").WebButton("Btn Simpan").Click
+	wait 2
+	If Browser("DPLK").Page("Pembatalan Ticket Fixed Income").WebElement("PopUp ×Data berhasil ditambah").Exist(5) Then
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Pembatalan Ticket Fixed Income"), "Berhasil Tambah Pembatalan Ticket Fixed Income", " ", compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+		Call SearchPembatalanTicketFixedIncome(dtSearch, dtExplain)
+	Else
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Pembatalan Ticket Fixed Income"), "Gagal Tambah Pembatalan Ticket Fixed Income", " ", compatibilityMode.Desktop, ReportStatus.Passed)
+	End If
+	wait 2
+End Sub
+
+REM -------------------------------- Fixed Income -> Pembatalan -> Verifikasi Pembatalan Ticket Fixed Income -----------------------------------------
+
+'Approve Pembatalan Ticket Fixed Income
+Sub ApprovePembatalanTicketFixedIncome
+
+	ticketID			= DataTable.Value("TICKET_ID", dtlocalsheet)
+	statusVerifikasi	= DataTable.Value("STATUS_VERIFIKASI", dtlocalsheet)
+	keteranganVerifikasi= DataTable.Value("KETERANGAN_VERIFIKASI", dtlocalsheet)
+	explain				= DataTable.Value("EXPLAIN", dtlocalsheet)
+	
+	wait 2
+	Browser("DPLK").Page("Verifikasi Pembatalan Ticket Fixed Income").WebEdit("Field Search Data").Set ticketID
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Pembatalan Ticket Fixed Income"), "Search Data yang Akan "&explain, " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Pembatalan Ticket Fixed Income").WebElement("Btn Checklist Verifikasi"), "Klik Button Checklist", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Verifikasi Pembatalan Ticket Fixed Income").WebElement("Btn Checklist Verifikasi").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Pembatalan Ticket Fixed Income"), "Berikut Detail Data Sebelum "&explain, " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	objkey.SendKeys"{PGDN}"
+	wait 1
+	Browser("DPLK").Page("Verifikasi Pembatalan Ticket Fixed Income").WebElement("Dropdown Status Verifikasi").Click
+	wait 1
+	objkey.SendKeys(statusVerifikasi)
+	wait 1
+	objkey.SendKeys"{ENTER}"
+	wait 1
+	Browser("DPLK").Page("Verifikasi Pembatalan Ticket Fixed Income").WebEdit("Field Keterangan Verifikasi").Set keteranganVerifikasi
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Pembatalan Ticket Fixed Income"), "Isi Field Status Verifikasi dan Keterangan Verifikasi, Kemudian Klik Button Simpan", " ", compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Verifikasi Pembatalan Ticket Fixed Income").WebButton("Btn Simpan").Click
+	wait 2
+	Call ConfirmOtorisasi()
+	If Browser("DPLK").Page("Verifikasi Pembatalan Ticket Fixed Income").WebElement("PopUp ×Data berhasil diverifikasi").Exist(5) Then
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Pembatalan Ticket Fixed Income"), "Data Berhasil "&explain, " ", compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+		Browser("DPLK").Page("Verifikasi Pembatalan Ticket Fixed Income").WebEdit("Field Search Data").Set ticketID
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Pembatalan Ticket Fixed Income"), "Berikut Data Dengan Ticket ID "&ticketID&" Setelah "&explain, " ", compatibilityMode.Desktop, ReportStatus.Done)
+	Else
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Pembatalan Ticket Fixed Income"), "Data Gagal "&explain, " ", compatibilityMode.Desktop, ReportStatus.Passed)
+	End If
+	wait 2
+End Sub

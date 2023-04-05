@@ -1,0 +1,1 @@
+﻿var __testDataSource={items:[{dataFilePath:'Default.xlsx',dataFileFormat:'excel',dataFileFolder:'C:\\Users\\1427\\Documents\\BNI\\DPLK\\DPLKKPS135-002 - Kepesertaan - Transaksi - Register Perjanjian Kerja Sama - Lanjutkan Verifikasi\\Report',namePairs:[]}]};

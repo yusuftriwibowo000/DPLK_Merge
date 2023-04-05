@@ -1,0 +1,167 @@
+<?xml version="1.0"?>
+<Results version="1.0">
+<ReportNode type="testrun">
+<ReportNode type="Iteration">
+<ReportNode type="Action">
+<ReportNode type="Iteration">
+<ReportNode type="Step">
+<Data>
+    <Name>LoadFunctionLibrary</Name>
+    <Description>The following function libraries either could not be found in the specified paths or the paths were not valid: C:\Users\1442\Desktop\DPLK 2\DPLKADM\Lib_Repo_Excel\LibReport\BNI_GlobalFunction.qfl</Description>
+    <StartTime>2023-03-02 09:32:58</StartTime>
+    <Result>Failed</Result>
+    <Extension>
+      <IconKey>f85da7dc094648c38ac3602dc8ff7894</IconKey>
+      <IsPlainTextNodeName>True</IsPlainTextNodeName>
+    </Extension>
+    <Snapshot reference="Resources\Snapshots\f25681fa-5b17-4182-8afe-c5a045a0f0b6.jpeg" />
+    <DeviceInfo />
+  </Data>
+</ReportNode>
+<ReportNode type="Step">
+<Data>
+    <Name>The following function libraries either could not be found in the specified paths or the paths were not valid: C:\Users\1442\Desktop\DPLK 2\DPLKADM\Lib_Repo_Excel\LibReport\BNI_GlobalFunction.qfl</Name>
+    <ErrorText>The following function libraries either could not be found in the specified paths or the paths were not valid: C:\Users\1442\Desktop\DPLK 2\DPLKADM\Lib_Repo_Excel\LibReport\BNI_GlobalFunction.qfl</ErrorText>
+    <Description>&lt;BR/&gt;Line (42): &amp;quot;LoadFunctionLibrary (LibReport &amp;amp; &amp;quot;BNI_GlobalFunction.qfl&amp;quot;)&amp;quot;.</Description>
+    <StartTime>2023-03-02 09:32:58</StartTime>
+    <Result>Failed</Result>
+    <Extension>
+      <StackTrace>
+        <StackFrame>
+          <ModuleName><![CDATA[ADM150-001]]></ModuleName>
+          <FileName><![CDATA[ADM150-001]]></FileName>
+          <Language><![CDATA[VBScript - script block]]></Language>
+          <FunctionName><![CDATA[spLoadLibrary]]></FunctionName>
+          <Scripts><![CDATA[LoadFunctionLibrary (LibReport & "BNI_GlobalFunction.qfl")]]></Scripts>
+          <LineNo><![CDATA[42]]></LineNo>
+        </StackFrame>
+        <StackFrame>
+          <ModuleName><![CDATA[ADM150-001]]></ModuleName>
+          <FileName><![CDATA[ADM150-001]]></FileName>
+          <Language><![CDATA[VBScript - script block]]></Language>
+          <FunctionName><![CDATA[VBScript global code]]></FunctionName>
+          <Scripts><![CDATA[Call spLoadLibrary()]]></Scripts>
+          <LineNo><![CDATA[5]]></LineNo>
+        </StackFrame>
+      </StackTrace>
+      <IconKey>97d326d5c1664fa0a69bdab86847b8e3</IconKey>
+      <IsPlainTextNodeName>True</IsPlainTextNodeName>
+      <MergeIsErrorIcon>True</MergeIsErrorIcon>
+    </Extension>
+    <Snapshot reference="Resources\Snapshots\7a80595d-e8f9-4834-817e-511ed5aedb3b.jpeg" />
+    <DeviceInfo />
+  </Data>
+</ReportNode>
+<ReportNode type="Step">
+<Data>
+    <Name>Stop global iteration replay</Name>
+    <Description>Run stopped by user.</Description>
+    <StartTime>2023-03-02 09:32:58</StartTime>
+    <Result>Information</Result>
+    <Extension>
+      <IconKey>a1ad0fd5a4c244cb8da23954f9520e75</IconKey>
+      <IsPlainTextNodeName>True</IsPlainTextNodeName>
+    </Extension>
+  </Data>
+</ReportNode>
+<Data>
+    <Name>ADM150-001</Name>
+    <Description />
+    <StartTime>2023-03-02 09:32:57</StartTime>
+    <Duration>1</Duration>
+    <Result>Failed</Result>
+    <Extension>
+      <IconKey>884a199d886c4da69a62a3caff85be3e</IconKey>
+      <IsPlainTextNodeName>True</IsPlainTextNodeName>
+    </Extension>
+    <Index>1</Index>
+    <TestedApplications>
+      <TestedApplication>
+        <RuntimeEngineInfo />
+        <Name>Google Chrome</Name>
+        <Path>C:\Program Files\Google\Chrome\Application\chrome.exe</Path>
+        <Version>110.0</Version>
+        <Technology>web</Technology>
+        <Reserved />
+        <AdditionalInfos>
+          <Info>http://192.168.168.111/</Info>
+        </AdditionalInfos>
+      </TestedApplication>
+    </TestedApplications>
+  </Data>
+</ReportNode>
+<Data>
+    <Name>ADM150-001</Name>
+    <Description />
+    <StartTime>2023-03-02 09:32:57</StartTime>
+    <Duration>1</Duration>
+    <Result>Failed</Result>
+    <InputParameters />
+    <Extension>
+      <IconKey>e5fc656e7fe047cf959985b403fe77a7</IconKey>
+      <IsPlainTextNodeName>True</IsPlainTextNodeName>
+    </Extension>
+  </Data>
+</ReportNode>
+<Data>
+    <Name>Action0</Name>
+    <Description />
+    <StartTime>2023-03-02 09:32:49</StartTime>
+    <Duration>9</Duration>
+    <Result>Failed</Result>
+    <Extension>
+      <IconKey>884a199d886c4da69a62a3caff85be3e</IconKey>
+      <IsPlainTextNodeName>True</IsPlainTextNodeName>
+    </Extension>
+    <Index>1</Index>
+    <TestedApplications />
+  </Data>
+</ReportNode>
+<Data>
+    <Name>DPLKADM150-001 - Setup Jenis Usaha - Tambah Data</Name>
+    <ToolName>Micro Focus UFT One</ToolName>
+    <ToolVersion>2021</ToolVersion>
+    <ToolVersionStringLiteral>2021</ToolVersionStringLiteral>
+    <Description />
+    <StartTime>2023-03-02 09:32:47</StartTime>
+    <Duration>11</Duration>
+    <Result>Failed</Result>
+    <InputParameters />
+    <Extension>
+      <ParallelRunnerEnvInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <ID />
+        <Manufacturer />
+        <Model />
+        <OsType />
+        <OsVersion />
+        <DesktopBrowser>Google Chrome</DesktopBrowser>
+        <ErrorMessage />
+      </ParallelRunnerEnvInfo>
+      <IconKey>abc31c8fa38d45d1a23dadf4b6b94e61</IconKey>
+      <IsPlainTextNodeName>True</IsPlainTextNodeName>
+    </Extension>
+    <Environment>
+      <Timezone>+07:00:00</Timezone>
+      <Locale>English (Indonesia)</Locale>
+      <User>1442</User>
+      <CpuInfo>AMD Ryzen 5 5500U with Radeon Graphics         </CpuInfo>
+      <NumberOfCores>12</NumberOfCores>
+      <TotalMemory>6006</TotalMemory>
+      <HostName>DGLQAO-821969-1</HostName>
+      <OSInfo>Windows 11 22H2 (x64)</OSInfo>
+    </Environment>
+    <TestedApplications />
+    <Links>
+      <Link type="DataTable" reference="Default.xlsx" displayname="Default Data Table" />
+    </Links>
+  </Data>
+</ReportNode>
+<GeneralInfo>
+    <ResultName>Report</ResultName>
+    <RunStartTime>2023-03-02 09:32:47</RunStartTime>
+    <Timezone>+07:00:00</Timezone>
+    <OrchestrationToolName>Micro Focus UFT One</OrchestrationToolName>
+    <OrchestrationToolVersion>2021</OrchestrationToolVersion>
+    <OrchestrationToolVersionStringLiteral>2021</OrchestrationToolVersionStringLiteral>
+  </GeneralInfo>
+</Results>

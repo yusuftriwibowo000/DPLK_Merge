@@ -1,0 +1,96 @@
+﻿Sub Generate_Dayend_PHI_Investasi
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebButton("Btn Generate SPI/PHI"),"Tekan Button Generate SPI/PHI", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebButton("Btn Generate SPI/PHI").Click
+	wait 3
+	Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebEdit("Field Tanggal Jobs").Set DataTable.Value("TANGGAL_JOBS",dtlocalsheet)	
+	Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebEdit("Field Tanggal PHI").Set DataTable.Value("TANGGAL_PHI",dtlocalsheet)		
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi"),"Isi Atau Ubah Field Yang Digunakan Dan Tekan Button Generate PHI", " ",  compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebButton("Btn Generate PHI").Click
+	wait 2
+	If Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebElement("Notifikasi").Exist(3) Then
+		TextNotif = Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebElement("Notifikasi").GetROProperty("innertext")
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi"),TextNotif, " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+	elseIf Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebElement("Notifikasi 2").Exist(3) Then
+		TextNotif = Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebElement("Notifikasi 2").GetROProperty("innertext")
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi"),TextNotif, " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+	End If
+	Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebButton("Btn Kembali").Click
+End Sub
+
+Sub Generate_Dayend_SPI_Investasi
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebButton("Btn Generate SPI/PHI"),"Tekan Button Generate SPI/PHI", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebButton("Btn Generate SPI/PHI").Click
+	wait 3
+	Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebEdit("Field Tanggal Jobs").Set DataTable.Value("TANGGAL_JOBS",dtlocalsheet)
+	Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebEdit("Field Tanggal SPI").Set DataTable.Value("TANGGAL_SPI",dtlocalsheet)	
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi"),"Isi Atau Ubah Field Yang Digunakan Dan Tekan Button Generate SPI", " ",  compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebButton("Btn Generate SPI").Click
+	wait 2
+	If Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebElement("Notifikasi").Exist(1) Then
+		TextNotif = Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebElement("Notifikasi").GetROProperty("innertext")
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi"),TextNotif, " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+	elseif Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebElement("Notifikasi 2").Exist(1) Then
+		TextNotif = Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebElement("Notifikasi 2").GetROProperty("innertext")
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi"),TextNotif, " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+	End If
+	Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebButton("Btn Kembali").Click
+End Sub
+
+Sub Search_And_View_Generate_Dayend_SPI_PHI_Investasi
+	Call AC_Direct_GoTo_Menu("Generate Dayend +(9)SPI/PHI+(0) Investasi",1)
+	If DataTable.Value("TANGGAL_PHI",dtlocalsheet) <> "" Then
+		Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebEdit("Field Search Tanggal PHI").Set DataTable.Value("TANGGAL_PHI",dtlocalsheet)
+	End If
+	If DataTable.Value("TANGGAL_SPI",dtlocalsheet) <> "" Then
+		Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebEdit("Field Search Tanggal SPI").Set DataTable.Value("TANGGAL_SPI",dtlocalsheet)
+	End If
+	Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebEdit("Field Search").Set DataTable.Value("SEARCH_KEYWORD",dtlocalsheet)
+	wait 7
+	Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").Link("Btn Show 10 rows").Click
+	wait 1
+	Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").Link("Btn 100 rows").Click
+	wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi"),"Berikut Hasil Data Yang Dicari", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Jumlah_Row = Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebTable("Tabel Search").RowCount
+	For RowTbl = 1+2 To Jumlah_Row Step 1
+		set x = Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebTable("Tabel Search").ChildItem(RowTbl,1,"WebElement",0)
+		wait 2
+		x.click
+		wait 5
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi"),"Berikut Isi Data Baris Ke-" &RowTbl-2, " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+		Call Compare_Debit_And_Credit()
+		Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebButton("Btn Kembali").Click
+		wait 3
+		If DataTable.Value("TANGGAL_PHI",dtlocalsheet) <> "" Then
+			Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebEdit("Field Search Tanggal PHI").Set DataTable.Value("TANGGAL_PHI",dtlocalsheet)
+		End If
+		If DataTable.Value("TANGGAL_SPI",dtlocalsheet) <> "" Then
+			Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebEdit("Field Search Tanggal SPI").Set DataTable.Value("TANGGAL_SPI",dtlocalsheet)
+		End If
+		Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").WebEdit("Field Search").Set DataTable.Value("SEARCH_KEYWORD",dtlocalsheet)
+		wait 7
+		Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").Link("Btn Show 10 rows").Click
+		wait 1
+		Browser("DPLK").Page("Generate Dayend (SPI/PHI) Investasi").Link("Btn 100 rows").Click
+		wait 3
+	Next
+End Sub

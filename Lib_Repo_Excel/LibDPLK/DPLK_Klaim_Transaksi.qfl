@@ -1,0 +1,1314 @@
+﻿REM ==== Setup Klaim Status
+Sub Tambah_Transaksi_Register_Cari_Peserta
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim").WebButton("Btn Tambah"),"Tekan Button Tambah", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	
+	Browser("DPLK").Page("Register Klaim").WebButton("Btn Tambah").Click
+	
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim"),"Pilih Jenis Register Klaim", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	
+	If ucase(DataTable.Value("JENIS_REGISTER",dtlocalsheet)) = "PENUTUPAN" Then
+		Browser("DPLK").Page("Register Klaim").WebButton("Btn Penutupan").Click
+	ElseIf ucase(DataTable.Value("JENIS_REGISTER",dtlocalsheet)) = "PENARIKAN" Then
+		Browser("DPLK").Page("Register Klaim").WebButton("Btn Penarikan").Click
+	End If
+	
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim"),"Masuk Menu Tambah Data ", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	
+	Browser("DPLK").Page("Register Klaim").WebButton("Btn Cari Peserta").Click
+	
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim"),"Masuk Menu Cari Peserta, dan Pilih Peserta", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	
+	Browser("DPLK").Page("Register Klaim").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 5
+	Browser("DPLK").Page("Register Klaim").WebElement("Table Index 1").SetTOProperty "innertext", DataTable.Value("ID_PESERTA",dtlocalsheet)
+	Browser("DPLK").Page("Register Klaim").WebElement("Table Index 1").Click 
+	
+
+End Sub
+
+Sub Check_Dialog_Pop_Up
+	If Browser("DPLK").DialogExists() Then
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim"), Browser("DPLK").GetDialogText() , " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 4
+		Browser("DPLK").HandleDialog micOK
+		wait 3
+	End If
+End Sub
+
+Sub Tambah_Transaksi_Register_Isi_Dokumen_Klaim
+	Set objkey = CreateObject("WScript.Shell")
+	'membuat path DPLK file upload
+	tempDPLKPath 	= Environment.Value("TestDir")
+	tempDPLKPath2 	= InStrRev(tempDPLKPath, "\")
+	pathDPLK		= Left(tempDPLKPath, tempDPLKPath2)
+	uploadPathDPLK	= pathDPLK & "File Upload\"
+	
+	File = uploadPathDPLK & DataTable.Value("FILE_PDF",dtlocalsheet)
+	Browser("DPLK").Page("Register Klaim").WebEdit("Field Id Peserta").Click
+	wait 2
+	For Iterator = 1 To DataTable.Value("DOKUMEN_UPLOAD",dtlocalsheet) Step 1
+		wait 2
+		objkey.SendKeys "{TAB}"
+		wait 2	
+		objkey.SendKeys "{ENTER}"
+		wait 10
+		objkey.SendKeys File
+		wait 7
+		objkey.SendKeys "{ENTER}"
+		wait 5
+	Next
+	
+	wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim"),"Upload Dokumen - Dokumen Yang Diperlukan", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+Sub Tambah_Transaksi_Register_Isi_Informasi_Rekening_Penerima_Dana
+	Set objkey = CreateObject("WScript.Shell")
+	Browser("DPLK").Page("Register Klaim").WebEdit("Field Nomer Rekening").Set DataTable.Value("NO_REKENING_YBS",dtlocalsheet)
+	Browser("DPLK").Page("Register Klaim").WebElement("Dropdown Kode Bank").Click
+	wait 1
+	objkey.SendKeys DataTable.Value("BANK",dtlocalsheet)
+	wait 1
+	objkey.SendKeys "{ENTER}"
+	wait 1
+	
+	Browser("DPLK").Page("Register Klaim").WebElement("Dropdown Kode Hubungan").Click
+	wait 1
+	objkey.SendKeys DataTable.Value("HUBUNGAN_NASABAH",dtlocalsheet)
+	wait 1
+	objkey.SendKeys "{ENTER}"
+	wait 1
+	
+	If DataTable.Value("HUBUNGAN_NASABAH",dtlocalsheet) <> 1 Then
+		Browser("DPLK").Page("Register Klaim").WebEdit("Field Pemilik Rekening").Set DataTable.value("NAMA_PESERTA",dtlocalsheet)
+	End If
+	
+	wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim"),"Isi Informasi Rekening Penerima Dana", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+Sub Tambah_Transaksi_Register_Isi_Informasi_Dana_Annuitas
+	Set objkey = CreateObject("WScript.Shell")
+	Browser("DPLK").Page("Register Klaim").WebElement("Dropdown Perusahaan Asuransi").Click
+	wait 3
+	objkey.SendKeys DataTable.Value("PERUSAHAAN_ASURANSI",dtlocalsheet)
+	wait 2
+	objkey.SendKeys "{ENTER}"
+	wait 2
+	Browser("DPLK").Page("Register Klaim").WebEdit("Field No Rekening Annuitas").Set DataTable.Value("REKENING_ASURANSI",dtlocalsheet)
+	wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim"),"Isi Informasi Dana Annuitas", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+Sub Check_Notification_Simpan_Draft
+	Browser("DPLK").Page("Register Klaim").WebButton("Btn Simpan Draft").Click
+	If Browser("DPLK").Page("Register Klaim").WebElement("Notifikasi").Exist(1) Then
+		TextNotif = Browser("DPLK").Page("Register Klaim").WebElement("Notifikasi").GetROProperty("innertext")
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim"),mid(TextNotif,2,len(TextNotif)-1), " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+	ElseIf Browser("DPLK").Page("Register Klaim").WebElement("Notifikasi 2").Exist(1) Then
+		TextNotif = Browser("DPLK").Page("Register Klaim").WebElement("Notifikasi 2").GetROProperty("innertext")
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim"),TextNotif, " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+	End If
+End Sub
+
+Sub Tambah_Transaksi_Register_Tgl_SK_Pensiun
+	Browser("DPLK").Page("Register Klaim").WebEdit("Field Tanggal SK").Set DataTable.Value("TANGGAL_SK_PENSIUN",dtlocalsheet)
+End Sub
+
+Sub Cari_dan_Ubah_Transaksi_Register
+	Browser("DPLK").Page("Register Klaim").WebButton("Btn Remove all items").Click
+	wait 5
+	Set objkey = CreateObject("WScript.Shell")
+	objkey.SendKeys "{ESC}"
+	wait 2
+	Browser("DPLK").Page("Register Klaim").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 7
+	Browser("DPLK").Page("Register Klaim").WebElement("Btn Ubah").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim"),"Cari Data Dan Masuk Kedalam Menu Edit", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+Sub Cari_dan_Ubah_Transaksi_Otorisasi
+	Browser("DPLK").Page("Otorisasi Klaim").WebButton("Btn Remove all items").Click
+	wait 5
+	Set objkey = CreateObject("WScript.Shell")
+	objkey.SendKeys "{ESC}"
+	wait 2
+	Browser("DPLK").Page("Otorisasi Klaim").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 7
+	Browser("DPLK").Page("Otorisasi Klaim").Link("Btn Proses").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Otorisasi Klaim"),"Cari Data Dan Masuk Kedalam Menu Edit", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Call Ubah_Otorisasi_Klaim()
+End Sub
+
+Sub Ubah_Otorisasi_Klaim
+	Browser("DPLK").Page("Otorisasi Klaim").WebEdit("Field Komentar Otorisasi").Set DataTable.Value("KETERANGAN",dtlocalsheet) 
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Otorisasi Klaim"),"Ubah Data yang di Inginkan", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+Sub Kirim_Ke_Val_Desk
+	Set objkey = CreateObject("WScript.Shell")
+	objkey.SendKeys "{PGDN}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Otorisasi Klaim").WebButton("Btn Kirim Ke VAL Desk"),"Tekan Button Kirim Ke Val Desk", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Otorisasi Klaim").WebButton("Btn Kirim Ke VAL Desk").Click
+	wait 4
+End Sub
+
+Sub Kirim_Ke_Otorisasi
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim").WebButton("Btn Kirim Ke Otorisasi"),"Tekan Button Kirim Ke Otorisasi", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Register Klaim").WebButton("Btn Kirim Ke Otorisasi").Click
+	wait 4
+End Sub
+
+Sub Validasi_Isi_Field_Register_Klaim
+	Set objkey = CreateObject("WScript.Shell")
+	objkey.SendKeys "{PGUP}"
+	wait 1 
+	objkey.SendKeys "{PGUP}"
+	wait 1
+	objkey.SendKeys "{PGUP}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim"),"Berikut Isi Field", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	objkey.SendKeys "{PGDN}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim"),"Berikut Isi Field", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	objkey.SendKeys "{PGDN}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim"),"Berikut Isi Field", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+Sub Validasi_Isi_Field_Otorisasi_Klaim
+	Set objkey = CreateObject("WScript.Shell")
+	objkey.SendKeys "{PGUP}"
+	wait 1 
+	objkey.SendKeys "{PGUP}"
+	wait 1
+	objkey.SendKeys "{PGUP}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Otorisasi Klaim"),"Berikut Isi Field", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	objkey.SendKeys "{PGDN}"
+	wait 1 
+	objkey.SendKeys "{PGDN}"
+	wait 1
+	objkey.SendKeys "{PGDN}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Otorisasi Klaim"),"Berikut Isi Field", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+Sub Cari_dan_Ubah_Transaksi_Validasi
+	Browser("DPLK").Page("Validasi Klaim").WebButton("Btn Remove all items").Click
+	wait 5
+	Set objkey = CreateObject("WScript.Shell")
+	objkey.SendKeys "{ESC}"
+	wait 2
+	Browser("DPLK").Page("Validasi Klaim").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 7
+	Browser("DPLK").Page("Validasi Klaim").Link("Btn Proses").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Validasi Klaim"),"Cari Data Dan Masuk Kedalam Menu Edit", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+Sub Kirim_Ke_Cal_Desk
+	Set objkey = CreateObject("WScript.Shell")
+	objkey.SendKeys "{PGDN}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Validasi Klaim").WebButton("Btn Kirim Ke VAL Desk"),"Tekan Button Kirim Ke Val Desk", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Validasi Klaim").WebButton("Btn Kirim Ke CAL Desk").Click
+	wait 4
+End Sub
+
+
+Sub Kirim_Ke_CFM_Desk
+	Set objkey = CreateObject("WScript.Shell")
+	objkey.SendKeys "{PGDN}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Validasi Klaim").WebButton("Btn Kirim Ke CFM Desk"),"Tekan Button Kirim Ke CFM Desk", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Validasi Klaim").WebButton("Btn Kirim Ke CFM Desk").Click
+	wait 4
+End Sub
+
+Sub Ubah_Validasi_Klaim
+	Browser("DPLK").Page("Validasi Klaim").WebEdit("Field Komentar Val Desk").Set DataTable.Value("KETERANGAN",dtlocalsheet) 
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Validasi Klaim"),"Ubah Data yang di Inginkan", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+Sub Cari_dan_Ubah_Transaksi_Calculate
+	Browser("DPLK").Page("Calculate Klaim").WebButton("Btn Remove all items").Click
+	wait 5
+	Set objkey = CreateObject("WScript.Shell")
+	objkey.SendKeys "{ESC}"
+	wait 5
+	Browser("DPLK").Page("Calculate Klaim").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 7
+	Browser("DPLK").Page("Calculate Klaim").Link("Btn Proses").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim"),"Cari Data Dan Masuk Kedalam Menu Edit", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Call Ubah_Calculate_Klaim()
+End Sub
+
+Sub Cari_Transaksi_Calculate
+	Browser("DPLK").Page("Calculate Klaim").WebButton("Btn Remove all items").Click
+	wait 5
+	Set objkey = CreateObject("WScript.Shell")
+	objkey.SendKeys "{ESC}"
+	wait 2
+	Browser("DPLK").Page("Calculate Klaim").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 7
+	Browser("DPLK").Page("Calculate Klaim").Link("Btn Proses").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim"),"Cari Data Dan Masuk Kedalam Menu Edit", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+Sub Ubah_Calculate_Klaim
+	Browser("DPLK").Page("Calculate Klaim").WebEdit("Field Komentar Calculate").Set DataTable.Value("KETERANGAN",dtlocalsheet) 
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim"),"Ubah Data yang di Inginkan", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+Sub Validasi_Isi_Field_Calculate_Klaim
+	Set objkey = CreateObject("WScript.Shell")
+	objkey.SendKeys "{PGUP}"
+	wait 1 
+	objkey.SendKeys "{PGUP}"
+	wait 1
+	objkey.SendKeys "{PGUP}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim"),"Berikut Isi Field", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	objkey.SendKeys "{PGDN}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim"),"Berikut Isi Field", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	objkey.SendKeys "{PGDN}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim"),"Berikut Isi Field", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+Sub Hitung_Calculate_Klaim
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim").WebButton("Btn Hitung"),"Tekan Button Hitung", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Calculate Klaim").WebButton("Btn Hitung").Click
+	wait 200
+	Call Validasi_Isi_Field_Calculate_Klaim
+End Sub
+
+Sub Hitung_Calculate_Klaim_With_Status
+	Set objkey = CreateObject("WScript.Shell")
+	Call Uncheck_Calculate_Klaim_With_Status
+	If DataTable.Value("CHECKLIST_STATUS",dtlocalsheet) <> "" Then
+		Jenis_Status = split(DataTable.Value("CHECKLIST_STATUS",dtlocalsheet),",")
+		For Iterator = 0 To UBound(Jenis_Status) Step 1
+			If ucase(Jenis_Status(Iterator)) = "KHUSUS" Then
+				Browser("DPLK").Page("Calculate Klaim").WebCheckBox("Check Box Status Khusus").Click
+				Browser("DPLK").Page("Calculate Klaim").WebElement("Dropdown Status Khusus").Click
+				wait 1
+				objkey.SendKeys DataTable.Value("JENIS_STATUS_KHUSUS",dtlocalsheet)
+				wait 2
+				objkey.SendKeys "{ENTER}"
+				wait 2
+			ElseIf ucase(Jenis_Status(Iterator)) = "ANUITAS" Then
+				Browser("DPLK").Page("Calculate Klaim").WebCheckBox("Check Box Dianuitaskan").Click
+			ElseIf ucase(Jenis_Status(Iterator)) = "LUMPSUM" Then
+				
+			End If
+		Next
+	End If
+	
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim"),"Checklist Dan Isi Status Yang Diperlukan", " ",  compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim").WebButton("Btn Hitung"),"Tekan Button Hitung", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Calculate Klaim").WebButton("Btn Hitung").Click
+	wait 300
+	Call Validasi_Isi_Field_Calculate_Klaim
+End Sub
+
+Sub Uncheck_Calculate_Klaim_With_Status
+	Status_Khusus = Browser("DPLK").Page("Calculate Klaim").WebCheckBox("Check Box Status Khusus").GetROProperty("checked")
+	Status_Dianuitaskan = Browser("DPLK").Page("Calculate Klaim").WebCheckBox("Check Box Dianuitaskan").GetROProperty("checked")
+
+	If Status_Khusus = 1 Then
+		Browser("DPLK").Page("Calculate Klaim").WebCheckBox("Check Box Status Khusus").Click
+	End If
+	
+	If Status_Dianuitaskan = 1 Then
+		Browser("DPLK").Page("Calculate Klaim").WebCheckBox("Check Box Dianuitaskan").Click
+	End If
+End Sub
+
+Sub Cetak_Hitungan_Calculate_Klaim
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim").WebButton("Btn Cetak Hitungan"),"Tekan Button Cetak Hitungan", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Calculate Klaim").WebButton("Btn Cetak Hitungan").Click
+	wait 120
+End Sub
+
+Sub Kirim_Ke_APR_Desk
+	Set objkey = CreateObject("WScript.Shell")
+	objkey.SendKeys "{PGDN}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim").WebButton("Btn Kirim Ke APR Desk"),"Tekan Button Kirim Ke APR Desk", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Calculate Klaim").WebButton("Btn Kirim Ke APR Desk").Click
+	wait 4
+End Sub
+
+Sub Cari_Transaksi_Approval
+	Browser("DPLK").Page("Approval Klaim").WebButton("Btn Remove all items").Click
+	wait 5
+	Set objkey = CreateObject("WScript.Shell")
+	objkey.SendKeys "{ESC}"
+	wait 2
+	Browser("DPLK").Page("Approval Klaim").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 7
+	Browser("DPLK").Page("Approval Klaim").Link("Btn Proses").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim"),"Cari Data Dan Masuk Kedalam Menu Edit", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+Sub Ubah_Approval_Klaim
+	Set objkey = CreateObject("WScript.Shell")
+	Browser("DPLK").Page("Approval Klaim").WebEdit("Field Komentar Approval").Set DataTable.Value("KETERANGAN",dtlocalsheet) 
+	wait 2
+	Browser("DPLK").Page("Approval Klaim").WebElement("Dropdown Keputusan Klaim").Click
+	wait 1
+	objkey.SendKeys DataTable.Value("KEPUTUSAN_KLAIM",dtlocalsheet)
+	wait 1
+	objkey.SendKeys "{ENTER}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim"),"Ubah Data yang di Inginkan", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+Sub Cari_dan_Ubah_Transaksi_Approval
+	Browser("DPLK").Page("Approval Klaim").WebButton("Btn Remove all items").Click
+	wait 5
+	Set objkey = CreateObject("WScript.Shell")
+	objkey.SendKeys "{ESC}"
+	wait 2
+	Browser("DPLK").Page("Approval Klaim").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 7
+	Browser("DPLK").Page("Approval Klaim").Link("Btn Proses").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim"),"Cari Data Dan Masuk Kedalam Menu Edit", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Call Ubah_Approval_Klaim
+End Sub
+
+Sub Kirim_Ke_Approve
+	Set objkey = CreateObject("WScript.Shell")
+	objkey.SendKeys "{PGDN}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim").WebButton("Btn Approve"),"Tekan Button Approve", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Approval Klaim").WebButton("Btn Approve").Click
+	wait 4
+End Sub
+
+Sub Validasi_Isi_Field_Approve_Klaim
+	Set objkey = CreateObject("WScript.Shell")
+	objkey.SendKeys "{PGUP}"
+	wait 1 
+	objkey.SendKeys "{PGUP}"
+	wait 1
+	objkey.SendKeys "{PGUP}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim"),"Berikut Isi Field", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	objkey.SendKeys "{PGDN}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim"),"Berikut Isi Field", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	objkey.SendKeys "{PGDN}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim"),"Berikut Isi Field", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+Sub Search_Nilai_Transaksi_dari_Entry_Jurnal_Transaksi(Search_Value)
+	set objkey = CreateObject("WScript.Shell")
+	Set PasteData = CreateObject("Mercury.Clipboard")
+	Set devices = CreateObject("Mercury.DeviceReplay")
+	Browser("DPLK").Page("Approval Klaim").WebEdit("Field Search").Set DataTable.Value("SEARCH_GLOBAL",dtlocalsheet)
+	Browser("DPLK").Page("Approval Klaim").WebButton("Btn Remove all items").Click
+	wait 2
+	objkey.SendKeys "{ESC}"
+	wait 1
+	Browser("DPLK").Page("Approval Klaim").WebElement("Btn Lihat").Click
+	
+	For Iterator = 1 To 9 Step 1
+		objkey.SendKeys "^="
+		wait 1
+	Next
+	
+	wait 2
+	objkey.SendKeys "^f"
+	wait 1
+	objkey.SendKeys Search_Value
+	wait 1
+	objkey.SendKeys "{ENTER}"
+	wait 1
+	devices.MouseDblClick 879 , 420 , LEFT_MOUSE_BUTTON
+	wait 1
+	set TekanButton = CreateObject("WScript.Shell")
+	wait 2
+	TekanButton.SendKeys "^c"
+	wait 3
+	TekanButton.SendKeys "^C"
+	wait 5
+	TekanButton.SendKeys "{F6}"
+	wait 5
+	TekanButton.SendKeys "^0"
+	wait 3	
+	TekanButton.SendKeys "{F12}"
+	wait 2
+	TekanButton.SendKeys "{ESC}"
+	wait 1
+	TekanButton.SendKeys "{ESC}"
+	wait 1
+	Browser("DPLK").Page("Approval Klaim").WebElement("Header").Click
+	wait 1
+	TekanButton.SendKeys "^f"
+	wait 1
+	TekanButton.SendKeys "^f"
+	wait 1
+	TekanButton.SendKeys Search_Value
+	wait 1
+	TekanButton.SendKeys "{ENTER}"
+	wait 2
+	Browser("DPLK").Page("Approval Klaim").WebElement("Total Penarikan").Click
+	wait 2
+	If Search_Value = PasteData.GetText Then
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim"),"Nilai "&Keterangan&" Sama", "Sama - Sama "&Search_Value,  compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+	Else 
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim"),"Nilai "&Keterangan&" Berbeda", "Data Yang Dicari : "&Search_Value&" Data Yang ditemukan : "&PasteData.GetText ,  compatibilityMode.Desktop, ReportStatus.Failed)
+		wait 2
+	End If
+	
+	PasteData.Clear
+End Sub
+
+Sub Tambah_Transaksi_Register_Klaim_Pasca_Kerja
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim Pasca Kerja").WebButton("Btn Tambah"),"Tekan Button Tambah", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebButton("Btn Tambah").Click
+	
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim Pasca Kerja"),"Masuk Menu Tambah Data ", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebButton("Btn Search Peserta").Click
+
+	
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim Pasca Kerja"),"Masuk Menu Cari Peserta, dan Pilih Peserta", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebEdit("Field Search Peserta").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 5
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebElement("First Data On Table Search Peserta").SetTOProperty "innertext", DataTable.Value("ID_PESERTA",dtlocalsheet)
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebElement("First Data On Table Search Peserta").Click 
+	
+	wait 2
+	Browser("DPLK").Page("Register Klaim").WebEdit("Field Tanggal SK").Set DataTable.Value("TANGGAL_SK_PENSIUN",dtlocalsheet)
+
+End Sub
+
+Sub Fill_Informasi_Rekening_Penerima_Dana_Register_Klaim_Pasca_Kerja
+	Set objkey = CreateObject("WScript.Shell")
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebEdit("Field Alamat Penerima").Set DataTable.Value("ALAMAT_PENERIMA",dtlocalsheet)
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebEdit("Field Cabang").Set DataTable.Value("CABANG",dtlocalsheet)
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebEdit("Field Catatan").Set DataTable.Value("KETERANGAN",dtlocalsheet)
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebEdit("Field Kota Bank").Set DataTable.Value("KOTA_BANK",dtlocalsheet)
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebEdit("Field Nama Pegawai").Set DataTable.Value("NAMA_PEGAWAI",dtlocalsheet)
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebEdit("Field No HP").Set DataTable.Value("NO_HP",dtlocalsheet)
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebEdit("Field No Identitas").Set DataTable.Value("NO_IDENTITAS",dtlocalsheet)
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebEdit("Field No NPWP").Set DataTable.Value("NO_NPWP",dtlocalsheet)
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebEdit("Field No Rekening").Set DataTable.Value("NO_REKENING",dtlocalsheet)
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebEdit("Field Nomer Pegawai").Set DataTable.Value("NO_PEGAWAI",dtlocalsheet)
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebEdit("Field Nomer Telp").Set DataTable.Value("NO_HP",dtlocalsheet)
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebEdit("Field Pemilik Rekening").Set DataTable.Value("NO_REKENING",dtlocalsheet)
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebEdit("Field Tgl Lahir Pegawai").Set DataTable.Value("TGL_LAHIR_PEGAWAI",dtlocalsheet)
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebElement("Dropdown Bank").Click
+	wait 2
+	objkey.SendKeys DataTable.Value("BANK",dtlocalsheet)
+	wait 2
+	objkey.SendKeys "{ENTER}"
+	wait 2
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebElement("Dropdown Hubungan Nasabah").Click
+	wait 2
+	objkey.SendKeys DataTable.Value("HUBUNGAN_NASABAH",dtlocalsheet)
+	wait 2
+	objkey.SendKeys "{ENTER}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim Pasca Kerja"),"Isi Field Dan Dropdown Informasi Rekening Penerima Dana", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+Sub Tambah_Register_Klaim_Pasca_Kerja_Isi_Dokumen_Klaim
+	Set objkey = CreateObject("WScript.Shell")
+	'membuat path DPLK file upload
+	tempDPLKPath 	= Environment.Value("TestDir")
+	tempDPLKPath2 	= InStrRev(tempDPLKPath, "\")
+	pathDPLK		= Left(tempDPLKPath, tempDPLKPath2)
+	uploadPathDPLK	= pathDPLK & "File Upload\"
+	
+	File = uploadPathDPLK & DataTable.Value("FILE_PDF",dtlocalsheet)
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebEdit("Field Id Peserta").Click
+	wait 2
+	For Iterator = 1 To DataTable.Value("DOKUMEN_UPLOAD",dtlocalsheet) Step 1
+		wait 2
+		objkey.SendKeys "{TAB}"
+		wait 2	
+		objkey.SendKeys "{ENTER}"
+		wait 10
+		objkey.SendKeys File
+		wait 7
+		objkey.SendKeys "{ENTER}"
+		wait 5
+	Next
+	
+	wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim Pasca Kerja"),"Upload Dokumen - Dokumen Yang Diperlukan", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+Sub Validasi_Isi_Field_Register_Klaim_Pasca_Kerja
+	Set objkey = CreateObject("WScript.Shell")
+	objkey.SendKeys "{PGUP}"
+	wait 1 
+	objkey.SendKeys "{PGUP}"
+	wait 1
+	objkey.SendKeys "{PGUP}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim Pasca Kerja"),"Berikut Isi Field", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	objkey.SendKeys "{PGDN}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim Pasca Kerja"),"Berikut Isi Field", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	objkey.SendKeys "{PGDN}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim Pasca Kerja"),"Berikut Isi Field", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+
+Sub Kirim_Otorisasi_Register_Klaim_Pasca_Kerja
+	Set objkey = CreateObject("WScript.Shell")
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebButton("Btn Remove all items").Click
+	wait 2
+	objkey.SendKeys "{ESC}"
+	wait 2
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 4
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim Pasca Kerja"),"Berikut Hasil Yang Di cari, Dan Masuk Kedalam Menu Edit", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebElement("Btn Ubah").Click
+	wait 3
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim Pasca Kerja"),"Berikut Data Yang Akan Di Kirim Ke Otorisasi", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim Pasca Kerja").WebButton("Btn Kirim Ke Otorisasi"),"Tekan Tombol Kirim Ke Otorisasi", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Register Klaim Pasca Kerja").WebButton("Btn Kirim Ke Otorisasi").Click
+	wait 5
+End Sub
+
+Sub Kirim_Validasi_Otorisasi_Klaim_Pasca_Kerja
+	Set objkey = CreateObject("WScript.Shell")
+	Browser("DPLK").Page("Validasi Klaim Pasca Kerja").WebButton("Btn Remove all items").Click
+	wait 2
+	objkey.SendKeys "{ESC}"
+	wait 4
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim Pasca Kerja"),"Berikut Hasil Pencarian dan Lanjut ke Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Validasi Klaim Pasca Kerja").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Validasi Klaim Pasca Kerja"),"Berikut Data Yang Akan Di Kirim Ke Validasi", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 3
+	Browser("DPLK").Page("Validasi Klaim Pasca Kerja").Link("Btn Proses").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Validasi Klaim Pasca Kerja").WebButton("Btn Kirim Ke CAL Desk"),"Tekan Tombol Kirim Ke CAL Desk", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Validasi Klaim Pasca Kerja").WebButton("Btn Kirim Ke CAL Desk").Click
+	wait 3
+End Sub
+
+Sub Kirim_Kalkulasi_Validasi_Klaim_Pasca_Kerja
+	Set objkey = CreateObject("WScript.Shell")
+	Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebButton("Btn Remove all items").Click
+	wait 2
+	objkey.SendKeys "{ESC}"
+	wait 4
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Pasca Kerja"),"Berikut Hasil Pencarian dan Lanjut ke Proses Hitung", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Pasca Kerja"),"Berikut Data Yang Akan Dihitung", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 3
+	Browser("DPLK").Page("Calculate Klaim Pasca Kerja").Link("Btn Proses").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebButton("Btn Hitung"),"Tekan Tombol Hitung", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebButton("Btn Hitung").Click
+	wait 300
+End Sub
+
+Sub Kirim_Kalkulasi_Validasi_Klaim_Pasca_Kerja_With_Status
+	Set objkey = CreateObject("WScript.Shell")
+	Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebButton("Btn Remove all items").Click
+	wait 2
+	objkey.SendKeys "{ESC}"
+	wait 4
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Pasca Kerja"),"Berikut Hasil Pencarian dan Lanjut ke Proses Hitung", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Pasca Kerja"),"Berikut Data Yang Akan Dihitung", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 3
+	Browser("DPLK").Page("Calculate Klaim Pasca Kerja").Link("Btn Proses").Click
+	Call Uncheck_Calculate_Klaim_Pasca_Kerja_With_Status
+	If DataTable.Value("CHECKLIST_STATUS",dtlocalsheet) <> "" Then
+		Jenis_Status = split(DataTable.Value("CHECKLIST_STATUS",dtlocalsheet),",")
+		For Iterator = 0 To UBound(Jenis_Status) Step 1
+			If ucase(Jenis_Status(Iterator)) = "KHUSUS" Then
+				Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebCheckBox("Check Box Status Khusus").Click
+				Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebElement("Dropdown Status Khusus").Click
+				wait 1
+				objkey.SendKeys DataTable.Value("JENIS_STATUS_KHUSUS",dtlocalsheet)
+				wait 2
+				objkey.SendKeys "{ENTER}"
+				wait 2
+			ElseIf ucase(Jenis_Status(Iterator)) = "ANUITAS" Then
+				Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebCheckBox("Check Box Dianuitaskan").Click
+			ElseIf ucase(Jenis_Status(Iterator)) = "LUMPSUM" Then
+				
+			End If
+		Next
+	End If
+	
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Pasca Kerja"),"Checklist Dan Isi Status Yang Diperlukan", " ",  compatibilityMode.Desktop, ReportStatus.Done)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebButton("Btn Hitung"),"Tekan Button Hitung", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebButton("Btn Hitung").Click
+	wait 300
+	Call Validasi_Isi_Field_Calculate_Klaim
+End Sub
+
+Sub Uncheck_Calculate_Klaim_Pasca_Kerja_With_Status
+	Status_Khusus = Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebCheckBox("Check Box Status Khusus").GetROProperty("checked")
+	Status_Dianuitaskan = Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebCheckBox("Check Box Dianuitaskan").GetROProperty("checked")
+
+	If Status_Khusus = 1 Then
+		Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebCheckBox("Check Box Status Khusus").Click
+	End If
+	
+	If Status_Dianuitaskan = 1 Then
+		Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebCheckBox("Check Box Dianuitaskan").Click
+	End If
+End Sub
+
+Sub Cetak_Hitungan_Calculate_Klaim_Pasca_Kerja
+	Set objkey = CreateObject("WScript.Shell")
+	Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebButton("Btn Remove all items").Click
+	wait 2
+	objkey.SendKeys "{ESC}"
+	wait 4
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Pasca Kerja"),"Berikut Hasil Pencarian dan Lanjut ke Proses Hitung", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Pasca Kerja"),"Berikut Data Yang Akan Dihitung", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 3
+	Browser("DPLK").Page("Calculate Klaim Pasca Kerja").Link("Btn Proses").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebButton("Btn Cetak Hitungan"),"Tekan Button Cetak Hitungan", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebButton("Btn Cetak Hitungan").Click
+	wait 120
+End Sub
+
+Sub Kirim_Ke_APR_Desk_Calculate_Klaim_Pasca_Kerja
+	Set objkey = CreateObject("WScript.Shell")
+	Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebButton("Btn Remove all items").Click
+	wait 2
+	objkey.SendKeys "{ESC}"
+	wait 4
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Pasca Kerja"),"Berikut Hasil Pencarian dan Lanjut ke Proses Hitung", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Pasca Kerja"),"Berikut Data Yang Akan Dihitung", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 3
+	Browser("DPLK").Page("Calculate Klaim Pasca Kerja").Link("Btn Proses").Click
+	wait 2
+	objkey.SendKeys "{PGDN}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebButton("Btn Kirim Ke APR Desk"),"Tekan Button Kirim Ke APR Desk", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebButton("Btn Kirim Ke APR Desk").Click
+	wait 4
+End Sub
+	
+Sub Kirim_Ke_Approve_Calculate_Klaim_Pasca_Kerja
+	Set objkey = CreateObject("WScript.Shell")
+	Browser("DPLK").Page("Approval Klaim Pasca Kerja").WebButton("Btn Remove all items").Click
+	wait 2
+	objkey.SendKeys "{ESC}"
+	wait 4
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim Pasca Kerja"),"Berikut Hasil Pencarian dan Lanjut ke Proses Hitung", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Approval Klaim Pasca Kerja").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 5
+	Browser("DPLK").Page("Approval Klaim Pasca Kerja").Link("Btn Proses").Click
+	wait 4
+	objkey.SendKeys "{PGDN}"
+	wait 2
+	Browser("DPLK").Page("Approval Klaim Pasca Kerja").WebElement("Dropdown Keputusan Klaim").Click
+	wait 2
+	objkey.SendKeys DataTable.Value("KEPUTUSAN_KLAIM",dtlocalsheet)
+	wait 2
+	objkey.SendKeys "{ENTER}"
+	Call Validasi_Isi_Field_Approve_Klaim
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim Pasca Kerja").WebButton("Btn Approve"),"Tekan Button Approve", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Approval Klaim Pasca Kerja").WebButton("Btn Approve").Click
+	wait 4
+End Sub
+
+Sub Tambah_Register_Klaim_Kolektif
+	Set objkey = CreateObject("WScript.Shell")
+	Set devices = CreateObject("Mercury.DeviceReplay")
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim Kolektif").WebButton("Btn Tambah"),"Tekan Button Tambah", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Register Klaim Kolektif").WebButton("Btn Tambah").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim Kolektif"),"Masuk Menu Tambah", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Register Klaim Kolektif").WebButton("Btn Search No Kolektif").Click
+	Browser("DPLK").Page("Register Klaim Kolektif").WebEdit("Field Search Kolektif").Set DataTable.Value("NOMOR_KOLEKTIF",dtlocalsheet)
+	wait 5
+	Browser("DPLK").Page("Register Klaim Kolektif").WebElement("Object Table No Kolektif").SetTOProperty "innertext",DataTable.Value("NOMOR_KOLEKTIF",dtlocalsheet)
+	wait 2
+	Browser("DPLK").Page("Register Klaim Kolektif").WebElement("Object Table No Kolektif").Click
+	wait 10
+	Browser("DPLK").Page("Register Klaim Kolektif").WebEdit("Field Tanggal Pengajuan").Set DataTable.Value("TANGGAL_TERIMA_DOKUMEN",dtlocalsheet)
+	
+	No_Kol = Split(DataTable.Value("NO_REKENING",dtlocalsheet),",")
+	Jenis_Klaim = Split(DataTable.Value("JENIS_KLAIM",dtlocalsheet),",")
+	Nama_Bank = Split(DataTable.Value("NAMA_BANK",dtlocalsheet),",")
+	Rekening_Bank = Split(DataTable.Value("REKENING_BANK",dtlocalsheet),",")
+	Pemilik_Rekening = Split(DataTable.Value("PEMILIK_REKENING",dtlocalsheet),",")
+	For Iterator = 0 To UBound(No_Kol) Step 1
+		Browser("DPLK").Page("Register Klaim Kolektif").WebElement("First Object On Table Kolektif").SetTOProperty "innertext",No_Kol(Iterator)
+		If Browser("DPLK").Page("Register Klaim Kolektif").WebElement("First Object On Table Kolektif").Exist(1) Then
+			x = Browser("DPLK").Page("Register Klaim Kolektif").WebElement("First Object On Table Kolektif").getRoProperty("abs_x")
+			y = Browser("DPLK").Page("Register Klaim Kolektif").WebElement("First Object On Table Kolektif").getRoProperty("abs_y")
+			devices.MouseMove x , y
+			devices.MouseClick x , y , LEFT_MOUSE_BUTTON
+			wait 1
+			objkey.SendKeys "+{TAB}"
+			wait 1
+			objkey.SendKeys " "
+			wait 1
+			objkey.SendKeys "{TAB}"
+			wait 1
+			objkey.SendKeys Jenis_Klaim(Iterator)
+			wait 1
+			objkey.SendKeys "{TAB}"
+			wait 1
+			objkey.SendKeys Nama_Bank(Iterator)
+			wait 1
+			objkey.SendKeys "{TAB}"
+			wait 1
+			objkey.SendKeys Rekening_Bank(Iterator)
+			wait 1
+			objkey.SendKeys "{TAB}"
+			wait 1
+			objkey.SendKeys Pemilik_Rekening(Iterator)
+			wait 3
+			wait 1
+			objkey.SendKeys "+{TAB}"
+			wait 1
+			wait 1
+			objkey.SendKeys "+{TAB}"
+			wait 1
+			wait 1
+			objkey.SendKeys "+{TAB}"
+			wait 1
+			objkey.SendKeys "+{TAB}"
+			wait 5
+		End If
+	Next
+	Browser("DPLK").Page("Register Klaim Kolektif").WebEdit("Field Tanggal Pengajuan").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim Kolektif"),"Isi Dan Centang Data Yang Diperelukan", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim Kolektif").WebButton("Btn Simpan Draft"),"Klik Tombol Simpan Draft", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Register Klaim Kolektif").WebButton("Btn Simpan Draft").Click
+	
+End Sub
+
+Sub Kirim_Calculate_Register_Klaim_Kolektif
+	Browser("DPLK").Page("Register Klaim Kolektif").WebButton("Btn Remove all items").Click
+	Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 8
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim Kolektif"),"Cari Data Dan Tekan Button Ubah", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Register Klaim Kolektif").WebElement("Btn Ubah").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim Kolektif"),"Masuk Kedalam Menu Ubah", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Register Klaim Kolektif").WebButton("Btn Kirim Ke Calculate"),"Tekan Button Kirim Ke Calculate", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Register Klaim Kolektif").WebButton("Btn Kirim Ke Calculate").Click
+	wait 10
+End Sub
+
+Sub Hitung_Calculate_Register_Klaim_Kolektif
+	Browser("DPLK").Page("Calculate Klaim Kolektif").WebEdit("Field Search").Set DataTable.Value("NOMOR_CLAIM",dtlocalsheet)
+	wait 8
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Kolektif"),"Cari Data Dan Tekan Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Calculate Klaim Kolektif").Link("Btn Proses").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Kolektif"),"Masuk Ke Menu Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Kolektif").WebButton("Btn Hitung"),"Tekan Button Hitung", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Calculate Klaim Kolektif").WebButton("Btn Hitung").Click
+	wait 40
+	Call Validasi_Isi_Field_Calculate_Klaim
+End Sub
+
+Sub Kirim_Approval_Calculate_Register_Klaim_Kolektif
+	Browser("DPLK").Page("Calculate Klaim Kolektif").WebEdit("Field Search").Set DataTable.Value("NOMOR_CLAIM",dtlocalsheet)
+	wait 8
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Kolektif"),"Cari Data Dan Tekan Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Calculate Klaim Kolektif").Link("Btn Proses").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Kolektif"),"Masuk Ke Menu Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Kolektif").WebButton("Btn Kirim Ke APR Desk"),"Tekan Button APR Desk", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Calculate Klaim Kolektif").WebButton("Btn Kirim Ke APR Desk").Click
+	wait 20
+End Sub
+
+Sub Send_Back_To_Calculate_Klaim_Kolektif
+	Browser("DPLK").Page("Approval Klaim Kolektif").WebEdit("Field Search").Set DataTable.Value("NOMOR_CLAIM",dtlocalsheet)
+	wait 8
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim Kolektif"),"Cari Data Dan Tekan Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Approval Klaim Kolektif").Link("Btn Proses").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim Kolektif"),"Masuk Ke Menu Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim Kolektif").WebButton("Btn Kirim Ke CAL Desk"),"Tekan Button CAL Desk", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Approval Klaim Kolektif").WebButton("Btn Kirim Ke CAL Desk").Click
+	wait 20
+End Sub
+
+Sub Send_Back_To_Register_Klaim_Kolektif
+	Browser("DPLK").Page("Calculate Klaim Kolektif").WebEdit("Field Search").Set DataTable.Value("NOMOR_CLAIM",dtlocalsheet)
+	wait 8
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Kolektif"),"Cari Data Dan Tekan Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Calculate Klaim Kolektif").Link("Btn Proses").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Kolektif"),"Masuk Ke Menu Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Kolektif").WebButton("Btn Send To REG Desk"),"Tekan Button APR Desk", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Calculate Klaim Kolektif").WebButton("Btn Send To REG Desk").Click
+	wait 20
+End Sub
+
+Sub Approve_Klaim_Kolektif
+	Set objkey = CreateObject("WScript.Shell")
+	Browser("DPLK").Page("Approval Klaim Kolektif").WebEdit("Field Search").Set DataTable.Value("NOMOR_CLAIM",dtlocalsheet)
+	wait 8
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim Kolektif"),"Cari Data Dan Tekan Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Approval Klaim Kolektif").Link("Btn Proses").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim Kolektif"),"Masuk Ke Menu Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Approval Klaim Kolektif").WebElement("Dropdown Keputusan Klaim").Click
+	wait 1
+	objkey.SendKeys DataTable.Value("KEPUTUSAN_KLAIM",dtlocalsheet)
+	wait 1
+	objkey.SendKeys "{ENTER}"
+	wait 2
+	Call Validasi_Isi_Field_Approve_Klaim
+	wait 2	
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim Kolektif").WebButton("Btn Approve"),"Tekan Button Approve", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Approval Klaim Kolektif").WebButton("Btn Approve").Click
+	wait 20
+End Sub
+
+Sub Send_Back_To_Calculate_Klaim_Pensiun
+	Browser("DPLK").Page("Approval Klaim").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 8
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim"),"Cari Data Dan Tekan Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Approval Klaim").Link("Btn Proses").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim"),"Masuk Ke Menu Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim").WebButton("Btn Kirim Ke CAL Desk"),"Tekan Button CAL Desk", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Approval Klaim").WebButton("Btn Kirim Ke CAL Desk").Click
+	wait 20
+End Sub
+
+Sub Send_Back_To_Vadilasi_Klaim_Pensiun
+	Browser("DPLK").Page("Calculate Klaim").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 8
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim"),"Cari Data Dan Tekan Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Calculate Klaim").Link("Btn Proses").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim"),"Masuk Ke Menu Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim").WebButton("Btn Kirim Ke VAL Desk"),"Tekan Button VAL Desk", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Calculate Klaim").WebButton("Btn Kirim Ke VAL Desk").Click
+	wait 20
+End Sub
+
+Sub Send_Back_To_Regristrasi_Klaim_Pensiun
+	Browser("DPLK").Page("Validasi Klaim").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 8
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Validasi Klaim"),"Cari Data Dan Tekan Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Validasi Klaim").Link("Btn Proses").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Validasi Klaim"),"Masuk Ke Menu Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Validasi Klaim").WebButton("Btn Kirim Ke REG Desk"),"Tekan Button REG Desk", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Validasi Klaim").WebButton("Btn Kirim Ke REG Desk").Click
+	wait 20
+End Sub
+
+Sub Batalkan_Regristrasi_Klaim_Pensiun
+	Browser("DPLK").Page("Validasi Klaim").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 8
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Validasi Klaim"),"Cari Data Dan Tekan Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Validasi Klaim").Link("Btn Proses").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Validasi Klaim"),"Masuk Ke Menu Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Validasi Klaim").WebButton("Btn Batalkan Pengajuan Klaim"),"Tekan Button Batalkan Pengajuan Klaim", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Validasi Klaim").WebButton("Btn Batalkan Pengajuan Klaim").Click
+	wait 20
+End Sub
+
+Sub Konfirmasi_Klaim_Pensiun_Ke_Validasi
+	Browser("DPLK").Page("Konfirmasi Klaim").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 8
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Konfirmasi Klaim"),"Cari Data Dan Tekan Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Konfirmasi Klaim").Link("Btn Proses").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Konfirmasi Klaim"),"Masuk Ke Menu Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Konfirmasi Klaim").WebButton("Btn Kirim Ke CAL Desk"),"Tekan Button Kirim Ke CAL Desk", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Konfirmasi Klaim").WebButton("Btn Kirim Ke CAL Desk").Click
+	wait 20
+End Sub
+
+Sub Send_Back_To_Calculate_Klaim_Pasca_Kerja
+	Browser("DPLK").Page("Approval Klaim Pasca Kerja").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 8
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim Pasca Kerja"),"Cari Data Dan Tekan Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Approval Klaim Pasca Kerja").Link("Btn Proses").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim Pasca Kerja"),"Masuk Ke Menu Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim Pasca Kerja").WebButton("Btn Kirim Ke CAL Desk"),"Tekan Button CAL Desk", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Approval Klaim Pasca Kerja").WebButton("Btn Kirim Ke CAL Desk").Click
+	wait 20
+End Sub
+
+Sub Send_Back_To_Validasi_Klaim_Pasca_Kerja
+	Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 8
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Pasca Kerja"),"Cari Data Dan Tekan Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Calculate Klaim Pasca Kerja").Link("Btn Proses").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Pasca Kerja"),"Masuk Ke Menu Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebButton("Btn Kirim Ke VAL Desk"),"Tekan Button VAL Desk", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Calculate Klaim Pasca Kerja").WebButton("Btn Kirim Ke VAL Desk").Click
+	wait 20
+End Sub
+
+Sub Send_Back_To_Regristrasi_Klaim_Pasca_Kerja
+	Browser("DPLK").Page("Validasi Klaim Pasca Kerja").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 8
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Validasi Klaim Pasca Kerja"),"Cari Data Dan Tekan Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Validasi Klaim Pasca Kerja").Link("Btn Proses").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Validasi Klaim Pasca Kerja"),"Masuk Ke Menu Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Validasi Klaim Pasca Kerja").WebButton("Btn Kirim Ke REG Desk"),"Tekan Button REG Desk", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Validasi Klaim Pasca Kerja").WebButton("Btn Kirim Ke REG Desk").Click
+	wait 20
+End Sub
+
+Sub Batalkan_Klaim_Pasca_Kerja
+	Browser("DPLK").Page("Validasi Klaim Pasca Kerja").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 8
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Validasi Klaim Pasca Kerja"),"Cari Data Dan Tekan Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Validasi Klaim Pasca Kerja").Link("Btn Proses").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Validasi Klaim Pasca Kerja"),"Masuk Ke Menu Proses", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Validasi Klaim Pasca Kerja").WebButton("Btn Batalkan Pengajuan Klaim"),"Tekan Button Batalkan Pengajuan Klaim", " ",  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Validasi Klaim Pasca Kerja").WebButton("Btn Batalkan Pengajuan Klaim").Click
+	wait 20
+End Sub
+
+Sub Search_Nilai_Transaksi_Pasca_Kerja_dari_Entry_Jurnal_Transaksi(Search_Value)
+	set objkey = CreateObject("WScript.Shell")
+	Set PasteData = CreateObject("Mercury.Clipboard")
+	Set devices = CreateObject("Mercury.DeviceReplay")
+	Browser("DPLK").Page("Approval Klaim Pasca Kerja").WebEdit("Field Search").Set DataTable.Value("SEARCH_DOKUMEN_ID",dtlocalsheet)
+	Browser("DPLK").Page("Approval Klaim Pasca Kerja").WebButton("Btn Remove all items").Click
+	wait 2
+	objkey.SendKeys "{ESC}"
+	wait 3
+	Browser("DPLK").Page("Approval Klaim Pasca Kerja").WebElement("Btn Lihat").Click
+	wait 3
+	For Iterator = 1 To 9 Step 1
+		objkey.SendKeys "^="
+		wait 1
+	Next
+	
+	wait 2
+	objkey.SendKeys "^f"
+	wait 1
+	objkey.SendKeys Search_Value
+	wait 1
+	objkey.SendKeys "{ENTER}"
+	wait 1
+	devices.MouseDblClick 879 , 420 , LEFT_MOUSE_BUTTON
+	wait 1
+	set TekanButton = CreateObject("WScript.Shell")
+	wait 2
+	TekanButton.SendKeys "^c"
+	wait 3
+	TekanButton.SendKeys "^C"
+	wait 5
+	TekanButton.SendKeys "{F6}"
+	wait 5
+	TekanButton.SendKeys "^0"
+	wait 3	
+	TekanButton.SendKeys "{F12}"
+	wait 2
+	TekanButton.SendKeys "{ESC}"
+	wait 1
+	TekanButton.SendKeys "{ESC}"
+	wait 1
+	Browser("DPLK").Page("Approval Klaim Pasca Kerja").WebElement("Header").Click
+	wait 1
+	TekanButton.SendKeys "^f"
+	wait 1
+	TekanButton.SendKeys "^f"
+	wait 1
+	TekanButton.SendKeys Search_Value
+	wait 1
+	TekanButton.SendKeys "{ENTER}"
+	wait 2
+	Browser("DPLK").Page("Approval Klaim Pasca Kerja").WebElement("Total Penarikan").Click
+	wait 2
+	If Search_Value = PasteData.GetText Then
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim Pasca Kerja"),"Nilai "&Keterangan&" Sama", "Sama - Sama "&Search_Value,  compatibilityMode.Desktop, ReportStatus.Passed)
+		wait 2
+	Else 
+		wait 2
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim Pasca Kerja"),"Nilai "&Keterangan&" Berbeda", "Data Yang Dicari : "&Search_Value&" Data Yang ditemukan : "&PasteData.GetText ,  compatibilityMode.Desktop, ReportStatus.Failed)
+		wait 2
+	End If
+	
+	PasteData.Clear
+End Sub
+
+Sub Lihat_Transaksi_Klaim_Approval_Klaim_Kolektif
+	Set objkey = CreateObject("WScript.Shell")
+	Browser("DPLK").Page("Approval Klaim Kolektif").WebButton("Btn Remove all items").Click
+	objkey.SendKeys "{ESC}"
+	Browser("DPLK").Page("Approval Klaim Kolektif").WebEdit("Field Search").Set DataTable.Value("SEARCH_DOKUMEN_ID",dtlocalsheet)
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim Kolektif"),"Cari Data Yang Diinginkan, Dan Tekan Button Lihat", " " ,  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 7
+	Browser("DPLK").Page("Approval Klaim Kolektif").WebElement("Btn Lihat").Click
+	wait 7
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Approval Klaim Kolektif"),"Berikut Data Yang Di Lihat", " " ,  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+Sub Lihat_Transaksi_Klaim_Approval_Klaim_Kolektif_No_SS
+	Browser("DPLK").Page("Approval Klaim Kolektif").WebButton("Btn Remove all items").Click
+	Browser("DPLK").Page("Approval Klaim Kolektif").WebEdit("Field Search").Set DataTable.Value("SEARCH_DOKUMEN_ID",dtlocalsheet)
+	wait 7
+	Browser("DPLK").Page("Approval Klaim Kolektif").WebElement("Btn Lihat").Click
+	wait 7
+End Sub
+
+Function Ambil_Banyaknya_Data_Tabel_Approval_Klaim_Kolektif
+	Call AC_Direct_GoTo_Menu_No_SS("Approval Klaim Kolektif" ,1)
+	Browser("DPLK").Page("Approval Klaim Kolektif").WebButton("Btn Remove all items").Click
+	Browser("DPLK").Page("Approval Klaim Kolektif").WebEdit("Field Search").Set DataTable.Value("SEARCH_DOKUMEN_ID",dtlocalsheet)
+	wait 7
+	Browser("DPLK").Page("Approval Klaim Kolektif").WebElement("Btn Lihat").Click
+	wait 7
+	Ambil_Banyaknya_Data_Tabel_Approval_Klaim_Kolektif = Browser("DPLK").Page("Approval Klaim Kolektif").WebTable("Tbl No Rek").RowCount
+End Function
+
+Function Get_CLM_Number_From_Approval_Klaim_Kolektif(Row,Col)
+	CLM = Browser("DPLK").Page("Approval Klaim Kolektif").WebTable("Tbl No Rek").GetCellData(Row,Col)
+	CLM = Replace(CLM,"Cetak Hitungan","")
+	CLM = Replace(CLM," ","")
+End Function
+
+Sub Download_Approval_Klaim_Kolektif(Row,Col)
+	set Download = Browser("DPLK").Page("Approval Klaim Kolektif").WebTable("Tbl No Rek").ChildItem(Row,1,"WebElement",0)
+	Download.Click
+	wait 20
+End Sub
+
+Sub Cari_Koreksi_Rekening_Klaim
+	Set objkey = CreateObject("WScript.Shell")
+	Browser("DPLK").Page("Koreksi Rekening Klaim").WebEdit("Field Search").Set DataTable.Value("ID_PESERTA",dtlocalsheet)
+	wait 7
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Koreksi Rekening Klaim"),"Cari Data Yang Diinginkan, Dan Tekan Button Lihat", " " ,  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+
+Sub Lihat_Dan_Ubah_Koreksi_Rekening_Klaim
+	
+End Sub
+
+Sub Ubah_Koreksi_Rekening_Klaim
+	Set objkey = CreateObject("WScript.Shell")
+	Browser("DPLK").Page("Koreksi Rekening Klaim").WebEdit("Field Pemilik Rekening").Set DataTable.Value("NAMA_KOREKSI",dtlocalsheet)
+	Browser("DPLK").Page("Koreksi Rekening Klaim").WebEdit("Field Cabang Bank").Set DataTable.Value("CABANG_BANK",dtlocalsheet)
+	Browser("DPLK").Page("Koreksi Rekening Klaim").WebEdit("Field Nomer Rekening").Set DataTable.Value("NO_REKENING_KOREKSI",dtlocalsheet)
+	Browser("DPLK").Page("Koreksi Rekening Klaim").WebElement("Dropdown Bank").Click
+	objkey.SendKeys DataTable.Value("BANK_KOREKSI",dtlocalsheet)
+	wait 2
+	objkey.SendKeys "{ENTER}"
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Koreksi Rekening Klaim"),"Ubah Field yang diperlukan", " " ,  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+Sub Lihat_Koreksi_Rekening_Klaim
+	Browser("DPLK").Page("Koreksi Rekening Klaim").WebElement("Btn Ubah").Click
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Koreksi Rekening Klaim"),"Berikut Isi Data", " " ,  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+End Sub
+
+Sub Simpan_Koreksi_Rekening_Klaim
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Koreksi Rekening Klaim").WebButton("Btn Simpan"),"Tekan Button Simpan Untuk Menyimpan Perubahan", " " ,  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Koreksi Rekening Klaim").WebButton("Btn Simpan").Click
+	wait 10
+End Sub
+
+Sub Approve_Koreksi_Rekening_Klaim
+	wait 2
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Koreksi Rekening Klaim").WebButton("Btn Approve"),"Tekan Button Approve Untuk Approve Perubahan", " " ,  compatibilityMode.Desktop, ReportStatus.Passed)
+	wait 2
+	Browser("DPLK").Page("Koreksi Rekening Klaim").WebButton("Btn Approve").Click
+	wait 10
+End Sub

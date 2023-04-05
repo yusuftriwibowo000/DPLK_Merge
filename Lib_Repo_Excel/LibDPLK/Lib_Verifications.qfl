@@ -1,0 +1,27 @@
+﻿Dim Path_Env, Path_Ver
+	
+Path_Env		= Environment.Value("Path_Folder")
+'Path_Ver_DB		= Path_Env & "\03. API - Scripts\API_DB_Verification"
+Path_Ver_DB		= Path_Env & "\Database_Verification"
+
+'REM ----- Call Action API DB
+'Sub spVerifikasi_DB_Login(ByVal dbType)
+'	LoadAndRunAction Path_Ver_DB, "API_DB_Login", OneIteration, dbType
+'End Sub
+'
+'Sub spVerifikasi_DB_Query(Byval QueryType, ByVal noJurnal, ByVal trxDate)
+'	LoadAndRunAction Path_Ver_DB, "API_DB_Query", OneIteration, QueryType, noJurnal, trxDate
+'End Sub
+'
+'Sub spVerifikasi_DB_Logout(ByVal dbType)
+'	LoadAndRunAction Path_Ver_DB, "API_DB_Logout", OneIteration, dbType
+'End Sub
+'
+REM ---- Call Action API LOG
+Sub spVerifikasi_Heidi_CreateSession()
+	LoadAndRunAction Path_Ver_DB, "Heidi_CreateSession", OneIteration
+End Sub
+
+Sub spVerifikasi_Heidi_Query(ByVal portalId)
+	LoadAndRunAction Path_Ver_DB, "Heidi_Query", OneIteration, portalId
+End Sub
