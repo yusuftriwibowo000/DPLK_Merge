@@ -114,9 +114,9 @@ Sub AddSetupMappingBankPembayaran
 	If Browser("DPLK").Page("Setup Mapping Bank Pembayaran").WebElement("PopUp ×Data berhasil ditambah").Exist(5) Then
 		Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Data Berhasil Ditambahkan", " ", compatibilityMode.Desktop, ReportStatus.Passed)
 		wait 2
-		Browser("DPLK").Page("Setup Mapping Bank Pembayaran").WebEdit("Field Search Data").Set biayaRTGS
+		Browser("DPLK").Page("Setup Mapping Bank Pembayaran").WebEdit("Field Search Data").Set kodeBIPenerima
 		wait 2
-		Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Data Dengan Biaya RTGS : "&biayaRTGS&", Telah Tersedia" , " ", compatibilityMode.Desktop, ReportStatus.Done)
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Data Dengan Kode BI Penerima : "&kodeBIPenerima&", Telah Tersedia" , " ", compatibilityMode.Desktop, ReportStatus.Done)
 	Else
 		Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Data Gagal Ditambahkan" , " ", compatibilityMode.Desktop, ReportStatus.Passed)
 	End If
@@ -126,9 +126,9 @@ End Sub
 'View Setup Mapping Bank Pembayaran
 Sub ViewSetupMappingBankPembayaran
 
-	biayaRTGS		= DataTable.Value("BIAYA_RTGS", dtlocalsheet)
+	kodeBIPenerima		= DataTable.Value("KODE_BI_PENERIMA", dtlocalsheet)
 	
-	Browser("DPLK").Page("Setup Mapping Bank Pembayaran").WebEdit("Field Search Data").Set biayaRTGS
+	Browser("DPLK").Page("Setup Mapping Bank Pembayaran").WebEdit("Field Search Data").Set kodeBIPenerima
 	wait 2
 	Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Search Data yang Akan Dilihat Detailnya", " ", compatibilityMode.Desktop, ReportStatus.Done)
 	wait 2
@@ -136,7 +136,7 @@ Sub ViewSetupMappingBankPembayaran
 	wait 2
 	Browser("DPLK").Page("Setup Mapping Bank Pembayaran").WebElement("Btn View").Click
 	wait 2
-	Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Berikut Detail Data Pada Biaya RTGS : " &biayaRTGS, " ", compatibilityMode.Desktop, ReportStatus.Passed)
+	Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Berikut Detail Data Pada Kode BI Penerima : " &kodeBIPenerima, " ", compatibilityMode.Desktop, ReportStatus.Passed)
 	wait 2
 End Sub
 
@@ -154,7 +154,7 @@ Sub EditSetupMappingBankPembayaran
 	statusRegister		= DataTable.Value("STATUS_REGISTER", dtlocalsheet)
 	keteranganRegister	= DataTable.Value("KETERANGAN_REGISTER", dtlocalsheet)
 	
-	Browser("DPLK").Page("Setup Mapping Bank Pembayaran").WebEdit("Field Search Data").Set biayaRTGS
+	Browser("DPLK").Page("Setup Mapping Bank Pembayaran").WebEdit("Field Search Data").Set kodeBIPenerima
 	wait 2
 	Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Search Data yang Akan Diupdate", " ", compatibilityMode.Desktop, ReportStatus.Done)
 	wait 2
@@ -177,9 +177,9 @@ Sub EditSetupMappingBankPembayaran
 	If Browser("DPLK").Page("Setup Mapping Bank Pembayaran").WebElement("PopUp ×Data berhasil diupdate").Exist(5) Then
 		Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Data Berhasil Diupdate", " ", compatibilityMode.Desktop, ReportStatus.Passed)
 		wait 2
-		Browser("DPLK").Page("Setup Mapping Bank Pembayaran").WebEdit("Field Search Data").Set biayaRTGS
+		Browser("DPLK").Page("Setup Mapping Bank Pembayaran").WebEdit("Field Search Data").Set kodeBIPenerima
 		wait 2
-		Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Berikut Data Dengan Biaya RTGS : "&biayaRTGS&", Setelah Diupdate", " ", compatibilityMode.Desktop, ReportStatus.Done)
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Berikut Data Dengan Kode BI Penerima : "&kodeBIPenerima&", Setelah Diupdate", " ", compatibilityMode.Desktop, ReportStatus.Done)
 	Else
 		Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Data Gagal Diupdate", " ", compatibilityMode.Desktop, ReportStatus.Passed)
 	End If
@@ -189,9 +189,9 @@ End Sub
 'Delete Setup Mapping Bank Pembayaran
 Sub DeleteSetupMappingBankPembayaran
 	
-	biayaRTGS		= DataTable.Value("BIAYA_RTGS", dtlocalsheet)
+	kodeBIPenerima		= DataTable.Value("KODE_BI_PENERIMA", dtlocalsheet)
 	
-	Browser("DPLK").Page("Setup Mapping Bank Pembayaran").WebEdit("Field Search Data").Set biayaRTGS
+	Browser("DPLK").Page("Setup Mapping Bank Pembayaran").WebEdit("Field Search Data").Set kodeBIPenerima
 	wait 2
 	Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Search Data yang Akan Dihapus", " ", compatibilityMode.Desktop, ReportStatus.Done)
 	wait 2
@@ -206,13 +206,13 @@ Sub DeleteSetupMappingBankPembayaran
 	Call ConfirmOtorisasi()
 	wait 2
 	If Browser("DPLK").Page("Setup Mapping Bank Pembayaran").WebElement("Popup ×Data berhasil dihapus").Exist(5) Then
-		Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Data Dengan Biaya RTGS : " &biayaRTGS& ", Berhasil Dihapus" , " ", compatibilityMode.Desktop, ReportStatus.Passed)
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Data Dengan Kode BI Penerima : " &kodeBIPenerima& ", Berhasil Dihapus" , " ", compatibilityMode.Desktop, ReportStatus.Passed)
 		wait 2
-		Browser("DPLK").Page("Setup Mapping Bank Pembayaran").WebEdit("Field Search Data").Set biayaRTGS
+		Browser("DPLK").Page("Setup Mapping Bank Pembayaran").WebEdit("Field Search Data").Set kodeBIPenerima
 		wait 2
-		Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Berikut Data Dengan Biaya RTGS : "&biayaRTGS&", Setelah Dihapus", " ", compatibilityMode.Desktop, ReportStatus.Done)
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Berikut Data Dengan Kode BI Penerima : "&kodeBIPenerima&", Setelah Dihapus", " ", compatibilityMode.Desktop, ReportStatus.Done)
 	Else
-		Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Data Dengan Biaya RTGS : "&biayaRTGS&", Gagal Dihapus" , " ", compatibilityMode.Desktop, ReportStatus.Passed)
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Data Dengan Kode BI Penerima : "&kodeBIPenerima&", Gagal Dihapus" , " ", compatibilityMode.Desktop, ReportStatus.Passed)
 	End If
 	wait 2
 End Sub
@@ -220,13 +220,13 @@ End Sub
 'Approve Setup Mapping Bank Pembayaran
 Sub ApproveSetupMappingBankPembayaran
 	
-	biayaRTGS			= DataTable.Value("BIAYA_RTGS", dtlocalsheet)
+	kodeBIPenerima		= DataTable.Value("KODE_BI_PENERIMA", dtlocalsheet)
 	statusVerifikasi	= DataTable.Value("STATUS_VERIFIKASI", dtlocalsheet)
 	keteranganVerifikasi= DataTable.Value("KETERANGAN_VERIFIKASI", dtlocalsheet)
 	explain				= DataTable.Value("EXPLAIN", dtlocalsheet)
 	
 	wait 2
-	Browser("DPLK").Page("Setup Mapping Bank Pembayaran").WebEdit("Field Search Data").Set biayaRTGS
+	Browser("DPLK").Page("Setup Mapping Bank Pembayaran").WebEdit("Field Search Data").Set kodeBIPenerima
 	wait 2
 	Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Search Data yang Akan "&explain, " ", compatibilityMode.Desktop, ReportStatus.Done)
 	wait 2
@@ -256,9 +256,9 @@ Sub ApproveSetupMappingBankPembayaran
 	If Browser("DPLK").Page("Setup Mapping Bank Pembayaran").WebElement("PopUp ×Data berhasil diupdate").Exist(5) Then
 		Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Data Berhasil "&explain, " ", compatibilityMode.Desktop, ReportStatus.Passed)
 		wait 2
-		Browser("DPLK").Page("Setup Mapping Bank Pembayaran").WebEdit("Field Search Data").Set biayaRTGS
+		Browser("DPLK").Page("Setup Mapping Bank Pembayaran").WebEdit("Field Search Data").Set kodeBIPenerima
 		wait 2
-		Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Berikut Data Dengan Biaya RTGS : "&biayaRTGS&", Setelah "&explain, " ", compatibilityMode.Desktop, ReportStatus.Done)
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Berikut Data Dengan Kode BI Penerima : "&kodeBIPenerima&", Setelah "&explain, " ", compatibilityMode.Desktop, ReportStatus.Done)
 		wait 2
 		x = Browser("DPLK").Page("Setup Mapping Bank Pembayaran").WebElement("Tabel Data Setup Mapping Bank Pembayaran").GetROProperty("abs_x")
 		y = Browser("DPLK").Page("Setup Mapping Bank Pembayaran").WebElement("Tabel Data Setup Mapping Bank Pembayaran").GetROProperty("abs_y")
@@ -267,11 +267,11 @@ Sub ApproveSetupMappingBankPembayaran
 		wait 2
 		objkey.SendKeys "{RIGHT 23}"
 		wait 2
-		Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Berikut Data Dengan Biaya RTGS : "&biayaRTGS&", Setelah "&explain, " ", compatibilityMode.Desktop, ReportStatus.Done)
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Berikut Data Dengan Kode BI Penerima : "&kodeBIPenerima&", Setelah "&explain, " ", compatibilityMode.Desktop, ReportStatus.Done)
 		wait 2
 		objkey.SendKeys "{RIGHT 5}"
 		wait 2
-		Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Berikut Data Dengan Biaya RTGS : "&biayaRTGS&", Setelah "&explain, " ", compatibilityMode.Desktop, ReportStatus.Done)
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Berikut Data Dengan Kode BI Penerima : "&kodeBIPenerima&", Setelah "&explain, " ", compatibilityMode.Desktop, ReportStatus.Done)
 	Else
 		Call CaptureImageUFTV2(Browser("DPLK").Page("Setup Mapping Bank Pembayaran"), "Data Gagal "&explain, " ", compatibilityMode.Desktop, ReportStatus.Passed)
 	End If

@@ -1,6 +1,9 @@
 ﻿Public GlobalRowIndex
 Dim testCaseName
 testCaseName = Environment("TestName")
+Set objkey	= CreateObject("WScript.Shell")
+Set devices = CreateObject("Mercury.DeviceReplay")
+Set objclip = CreateObject("Mercury.Clipboard")
 
 'REM ------ Untuk ambil file excel untuk membaca datatable
 Function fnGetDataTable(byval filename)
@@ -439,6 +442,7 @@ REM -------------------------------- Fungsi Cetak PDF --------------------------
 
 'Open Pdf Download
 Sub OpenPDFFile(namaFile)
+	
 	wait 12
 	objkey.SendKeys"^j"
 	wait 2

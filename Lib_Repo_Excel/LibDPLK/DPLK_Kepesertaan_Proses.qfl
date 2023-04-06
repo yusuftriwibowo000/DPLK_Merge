@@ -560,9 +560,9 @@ Sub VerifikasiSplitBalanceBulk
 	
 	totalDataInvalid = Browser("DPLK").Page("Verifikasi Split Balance(Bulk)").WebTable("Tabel Data Ringkasan Upload").GetCellData(3,8)
 	If totalDataInvalid = 0 Then
-		Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Split Balance(Bulk)").WebTable("Tabel Data Ringkasan Upload"), "Total Data Valid Pada Tabel RINGKASAN UPLOAD adalah 0 (VALID)", " ", compatibilityMode.Desktop, ReportStatus.Done)
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Split Balance(Bulk)").WebTable("Tabel Data Ringkasan Upload"), "Total Data Invalid Pada Tabel RINGKASAN UPLOAD adalah 0 (VALID)", " ", compatibilityMode.Desktop, ReportStatus.Done)
 	Else
-		Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Split Balance(Bulk)").WebTable("Tabel Data Ringkasan Upload"), "Total Data Valid Pada Tabel RINGKASAN UPLOAD adalah "&totalDataInvalid&" (TIDAK VALID)", " ", compatibilityMode.Desktop, ReportStatus.Done)
+		Call CaptureImageUFTV2(Browser("DPLK").Page("Verifikasi Split Balance(Bulk)").WebTable("Tabel Data Ringkasan Upload"), "Total Data Invalid Pada Tabel RINGKASAN UPLOAD adalah "&totalDataInvalid&" (TIDAK VALID)", " ", compatibilityMode.Desktop, ReportStatus.Done)
 	End If
 	
 	wait 2
